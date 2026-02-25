@@ -1,7 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <header>
+        <nav>
+            <div class="logo">MyPortfolio</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <h1>Hi, I'm <span style="color: #2c3e50;">[Your Name]</span></h1>
+            <p>Software Engineer | Web Developer | Tech Enthusiast</p>
+            <a href="#projects" class="btn">View My Work</a>
+        </section>
+
+        <section id="about" class="about">
+            <h2>About Me</h2>
+            <div class="about-content">
+                <div class="about-img">
+                    <img src="https://via.placeholder.com/250" alt="Profile Picture">
+                </div>
+                <div class="about-text">
+                    <p>Hello! I'm a passionate developer with experience in building web applications. I love solving problems and creating efficient, scalable solutions. This website is a showcase of my journey and the projects I've worked on.</p>
+                    <br>
+                    <p>When I'm not coding, you can find me exploring new technologies, reading tech blogs, or enjoying a good cup of coffee.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects">
+            <h2>My Projects</h2>
+            <div class="projects-grid">
+                <!-- Project Card 1 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <i class="fas fa-code fa-3x"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>Project One</h3>
+                        <p>A brief description of the project goes here. Explain what it does and the technologies used.</p>
+                        <a href="#" class="project-link">View Project &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <i class="fas fa-laptop-code fa-3x"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>Project Two</h3>
+                        <p>A brief description of the project goes here. Explain what it does and the technologies used.</p>
+                        <a href="#" class="project-link">View Project &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <i class="fas fa-mobile-alt fa-3x"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>Project Three</h3>
+                        <p>A brief description of the project goes here. Explain what it does and the technologies used.</p>
+                        <a href="#" class="project-link">View Project &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Get In Touch</h2>
+            <div class="contact-info">
+                <p>I'm currently open to new opportunities. Feel free to reach out!</p>
+                <p><strong>Email:</strong> contact@example.com</p>
+                <div class="social-links">
+                    <!-- Add social icons here if needed -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 MyPortfolio. All rights reserved.</p>
+    </footer>
 </body>
 </html>
