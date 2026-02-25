@@ -45,7 +45,7 @@
             <div class="post-header">
                 <div class="post-meta">
                     <span class="blog-date"><i class="fas fa-clock"></i> Feb 25, 2026</span>
-                    <span class="read-time"><i class="fas fa-book-open"></i> 10 min read</span>
+                    <span class="read-time"><i class="fas fa-book-open"></i> 18 min read</span>
                 </div>
                 <div class="blog-tags" style="justify-content: center; margin-bottom: 1.5rem;">
                     <span class="blog-tag">DIFFUSION</span>
@@ -68,8 +68,18 @@
                 </p>
 
                 <p>
-                    In this post, we'll build up the theory from scratch. No hand-waving, no "it's
-                    just denoising" -- we're going full math mode. Buckle up.
+                    The story of modern diffusion models has two intertwined threads. One comes from
+                    the <strong>score matching</strong> perspective -- learning the gradient of the log-density.
+                    The other comes from the <strong>DDPM</strong> (Denoising Diffusion Probabilistic Models)
+                    line of work -- a variational approach rooted in hierarchical latent variable models.
+                    These two threads turn out to be deeply connected, and understanding both gives you
+                    the full picture.
+                </p>
+
+                <p>
+                    In this post, we'll build up both perspectives from scratch, show exactly where they
+                    meet, and trace the evolution from the original ideas to modern practice. No hand-waving
+                    -- we're going full math mode.
                 </p>
 
                 <blockquote>
@@ -93,6 +103,20 @@
                     probability, without requiring us to know the normalizing constant of $p(\mathbf{x})$.
                 </p>
 
+                <p>
+                    For a concrete example, if $p(\mathbf{x})$ is a Gaussian
+                    $\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$, the score is:
+                </p>
+
+                <div class="math-block">
+                    $$\nabla_{\mathbf{x}} \log p(\mathbf{x}) = -\boldsymbol{\Sigma}^{-1}(\mathbf{x} - \boldsymbol{\mu})$$
+                </div>
+
+                <p>
+                    It's a vector field that always points toward the mean -- exactly what you'd expect.
+                    At any point, it tells you "go this way to reach higher probability."
+                </p>
+
                 <div class="info-box">
                     <div class="info-title">KEY INSIGHT</div>
                     <p>
@@ -101,15 +125,31 @@
                         function $Z$. If $p(\mathbf{x}) = \frac{1}{Z}\tilde{p}(\mathbf{x})$, then
                         $\nabla_{\mathbf{x}} \log p(\mathbf{x}) = \nabla_{\mathbf{x}} \log \tilde{p}(\mathbf{x})$
                         since $\nabla_{\mathbf{x}} \log Z = 0$.
+                        This is a big deal -- computing $Z$ is intractable for most interesting distributions.
                     </p>
                 </div>
+
+                <p>
+                    Once you have the score function, you can generate samples via <strong>Langevin dynamics</strong>.
+                    Starting from noise $\mathbf{x}_0 \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, iterate:
+                </p>
+
+                <div class="math-block">
+                    $$\mathbf{x}_{t+1} = \mathbf{x}_t + \frac{\eta}{2} \nabla_{\mathbf{x}} \log p(\mathbf{x}_t) + \sqrt{\eta}\, \mathbf{z}_t, \quad \mathbf{z}_t \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$$
+                </div>
+
+                <p>
+                    As $\eta \to 0$ and the number of steps $\to \infty$, the distribution of $\mathbf{x}_t$
+                    converges to $p(\mathbf{x})$. The score function is literally all you need to sample.
+                </p>
 
                 <h2>03 // SCORE MATCHING OBJECTIVE</h2>
 
                 <p>
-                    The goal of <strong>score matching</strong> (Hyvarinen, 2005) is to learn a model
+                    The goal of <strong>score matching</strong> (Hyv&auml;rinen, 2005) is to learn a model
                     $\mathbf{s}_\theta(\mathbf{x})$ that approximates the true score
-                    $\nabla_{\mathbf{x}} \log p(\mathbf{x})$. The naive approach would minimize:
+                    $\nabla_{\mathbf{x}} \log p(\mathbf{x})$. The naive approach would minimize the
+                    <strong>Fisher divergence</strong>:
                 </p>
 
                 <div class="math-block">
@@ -117,8 +157,9 @@
                 </div>
 
                 <p>
-                    But wait -- we don't know $\nabla_{\mathbf{x}} \log p(\mathbf{x})$! That's the whole
-                    point. Through a clever integration by parts trick, this objective can be rewritten as:
+                    But we don't know $\nabla_{\mathbf{x}} \log p(\mathbf{x})$ -- that's the whole
+                    point. Through integration by parts (assuming mild boundary conditions), this
+                    objective can be rewritten without the unknown score:
                 </p>
 
                 <div class="math-block">
@@ -126,23 +167,44 @@
                 </div>
 
                 <p>
-                    This is the <strong>explicit score matching</strong> objective. The key insight is that
-                    the first term involves the <em>Jacobian trace</em> of the score model, which only
-                    depends on our model -- not on the unknown data distribution.
+                    This is <strong>explicit score matching</strong>. The first term is the trace of the
+                    Jacobian of the score model -- it only depends on our model, not on the unknown data
+                    distribution. Brilliant in theory, but computing that Jacobian trace for a deep
+                    neural network is expensive ($O(d)$ backward passes for $d$-dimensional data).
+                </p>
+
+                <h3>Sliced Score Matching</h3>
+
+                <p>
+                    Song et al. (2020) proposed <strong>sliced score matching</strong> to avoid the
+                    Jacobian trace. The idea: project the score onto random directions $\mathbf{v}$
+                    and match the projected scores:
+                </p>
+
+                <div class="math-block">
+                    $$J_{SSM}(\theta) = \mathbb{E}_{p(\mathbf{v})} \mathbb{E}_{p(\mathbf{x})} \left[ \mathbf{v}^\top \nabla_{\mathbf{x}} \mathbf{s}_\theta(\mathbf{x}) \mathbf{v} + \frac{1}{2} \left( \mathbf{v}^\top \mathbf{s}_\theta(\mathbf{x}) \right)^2 \right]$$
+                </div>
+
+                <p>
+                    This reduces the cost to a single vector-Jacobian product, computable efficiently
+                    via backpropagation. But in practice, an even simpler approach won out.
                 </p>
 
                 <h2>04 // DENOISING SCORE MATCHING</h2>
 
                 <p>
-                    Computing the Jacobian trace can be expensive. <strong>Denoising score matching</strong>
-                    (Vincent, 2011) offers an elegant alternative. The idea: instead of matching the score
-                    of $p(\mathbf{x})$, match the score of a <em>noisy</em> version $p_\sigma(\tilde{\mathbf{x}})$.
+                    <strong>Denoising score matching</strong> (Vincent, 2011) is the approach that actually
+                    powers modern diffusion models. The idea is elegant: instead of matching the score
+                    of $p(\mathbf{x})$, match the score of a <em>noise-corrupted</em> version
+                    $p_\sigma(\tilde{\mathbf{x}})$.
                 </p>
 
                 <p>
                     If we corrupt data with Gaussian noise $\tilde{\mathbf{x}} = \mathbf{x} + \sigma\boldsymbol{\epsilon}$
                     where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, then the
-                    conditional score has a simple closed form:
+                    conditional distribution is
+                    $p(\tilde{\mathbf{x}} | \mathbf{x}) = \mathcal{N}(\tilde{\mathbf{x}}; \mathbf{x}, \sigma^2 \mathbf{I})$,
+                    and its score has a simple closed form:
                 </p>
 
                 <div class="math-block">
@@ -150,27 +212,224 @@
                 </div>
 
                 <p>
-                    The denoising score matching objective becomes:
+                    Vincent (2011) proved that minimizing the denoising objective is equivalent to
+                    minimizing the Fisher divergence to the <em>noisy</em> data distribution
+                    $p_\sigma(\tilde{\mathbf{x}}) = \int p(\tilde{\mathbf{x}} | \mathbf{x}) p(\mathbf{x}) d\mathbf{x}$:
                 </p>
 
                 <div class="math-block">
-                    $$J_{DSM}(\theta) = \frac{1}{2} \mathbb{E}_{p(\mathbf{x})} \mathbb{E}_{\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})} \left[ \left\| \mathbf{s}_\theta(\mathbf{x} + \sigma\boldsymbol{\epsilon}) + \frac{\boldsymbol{\epsilon}}{\sigma} \right\|^2 \right]$$
+                    $$J_{DSM}(\theta) = \frac{1}{2} \mathbb{E}_{p(\mathbf{x})} \mathbb{E}_{\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})} \left[ \left\| \mathbf{s}_\theta(\mathbf{x} + \sigma\boldsymbol{\epsilon}, \sigma) + \frac{\boldsymbol{\epsilon}}{\sigma} \right\|^2 \right]$$
                 </div>
+
+                <p>
+                    No Jacobian traces, no integration by parts -- just predict which direction the noise
+                    came from. The catch? This only gives you the score of the <em>noisy</em> distribution.
+                    If $\sigma$ is too small, the score estimate is inaccurate in low-density regions.
+                    If $\sigma$ is too large, the noisy distribution is too far from the real data.
+                </p>
 
                 <div class="info-box">
                     <div class="info-title">INTUITION</div>
                     <p>
                         Denoising score matching says: "train a network to predict the direction back
-                        to the clean data from its noisy version." This is essentially what diffusion
-                        models do -- they learn to denoise, and denoising <em>is</em> score estimation.
+                        to the clean data from its noisy version." The optimal denoiser points in the
+                        direction of the score. Denoising <em>is</em> score estimation.
                     </p>
                 </div>
 
-                <h2>05 // FROM SCORES TO DIFFUSION</h2>
+                <h2>05 // NCSN: MULTI-SCALE SCORE MATCHING</h2>
 
                 <p>
-                    Modern diffusion models extend denoising score matching across <em>multiple noise levels</em>.
-                    Consider a continuous-time forward process defined by the SDE:
+                    Song &amp; Ermon (2019) resolved the noise level dilemma with <strong>Noise Conditional
+                    Score Networks (NCSN)</strong>. The key insight: don't pick one $\sigma$ -- use many.
+                    Define a geometric sequence of noise levels
+                    $\sigma_1 > \sigma_2 > \cdots > \sigma_L$ and train a single score network
+                    $\mathbf{s}_\theta(\mathbf{x}, \sigma)$ across all of them:
+                </p>
+
+                <div class="math-block">
+                    $$\mathcal{L}_{NCSN}(\theta) = \frac{1}{L} \sum_{i=1}^{L} \lambda(\sigma_i) \, \mathbb{E}_{p(\mathbf{x})} \mathbb{E}_{\tilde{\mathbf{x}} \sim \mathcal{N}(\mathbf{x}, \sigma_i^2 \mathbf{I})} \left[ \left\| \mathbf{s}_\theta(\tilde{\mathbf{x}}, \sigma_i) + \frac{\tilde{\mathbf{x}} - \mathbf{x}}{\sigma_i^2} \right\|^2 \right]$$
+                </div>
+
+                <p>
+                    where $\lambda(\sigma_i) = \sigma_i^2$ ensures roughly equal loss magnitude across
+                    scales. At sampling time, they use <strong>annealed Langevin dynamics</strong> --
+                    start with the largest $\sigma_1$ (where the score landscape is smooth and
+                    easy to navigate), and gradually reduce to $\sigma_L$ (where the score captures
+                    fine details):
+                </p>
+
+                <div class="math-block">
+                    $$\mathbf{x}_{t+1} = \mathbf{x}_t + \frac{\eta_i}{2} \mathbf{s}_\theta(\mathbf{x}_t, \sigma_i) + \sqrt{\eta_i}\, \mathbf{z}_t$$
+                </div>
+
+                <p>
+                    This was the first score-based model to generate high-quality images, and it set the
+                    stage for everything that followed. But around the same time, a parallel line of work
+                    was reaching similar conclusions from a very different angle.
+                </p>
+
+                <h2>06 // THE DDPM LINE OF WORK</h2>
+
+                <p>
+                    While the score matching community was thinking about gradients of log-densities,
+                    another thread was developing diffusion models from the perspective of
+                    <strong>hierarchical variational autoencoders</strong>.
+                </p>
+
+                <h3>Deep Unsupervised Learning (Sohl-Dickstein et al., 2015)</h3>
+
+                <p>
+                    The original diffusion model paper framed the problem as learning to reverse a
+                    fixed corruption process. Define a <strong>forward process</strong> that gradually
+                    destroys data by adding noise over $T$ steps:
+                </p>
+
+                <div class="math-block">
+                    $$q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t}\, \mathbf{x}_{t-1}, \beta_t \mathbf{I})$$
+                </div>
+
+                <p>
+                    where $\{\beta_t\}_{t=1}^T$ is a variance schedule. After enough steps,
+                    $q(\mathbf{x}_T) \approx \mathcal{N}(\mathbf{0}, \mathbf{I})$. The generative
+                    model learns the <strong>reverse process</strong>:
+                </p>
+
+                <div class="math-block">
+                    $$p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \sigma_t^2 \mathbf{I})$$
+                </div>
+
+                <p>
+                    The model is trained by maximizing a variational lower bound (ELBO) on
+                    $\log p_\theta(\mathbf{x}_0)$. The idea was sound, but the results in 2015
+                    weren't competitive with GANs. It took five more years for someone to make it work.
+                </p>
+
+                <h3>DDPM (Ho et al., 2020)</h3>
+
+                <p>
+                    Ho et al. (2020) took this framework and made several key choices that turned it
+                    into a powerhouse. First, define cumulative noise parameters:
+                </p>
+
+                <div class="math-block">
+                    $$\alpha_t = 1 - \beta_t, \quad \bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$$
+                </div>
+
+                <p>
+                    A critical property: you can sample $\mathbf{x}_t$ directly from $\mathbf{x}_0$
+                    without iterating through all intermediate steps:
+                </p>
+
+                <div class="math-block">
+                    $$q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t}\, \mathbf{x}_0, (1 - \bar{\alpha}_t) \mathbf{I})$$
+                </div>
+
+                <p>
+                    Or equivalently: $\mathbf{x}_t = \sqrt{\bar{\alpha}_t}\, \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\, \boldsymbol{\epsilon}$,
+                    where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$.
+                </p>
+
+                <p>
+                    The ELBO decomposes into a sum of KL divergences between Gaussians. The posterior
+                    $q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0)$ is tractable and Gaussian:
+                </p>
+
+                <div class="math-block">
+                    $$q(\mathbf{x}_{t-1} | \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1}; \tilde{\boldsymbol{\mu}}_t(\mathbf{x}_t, \mathbf{x}_0), \tilde{\beta}_t \mathbf{I})$$
+                </div>
+
+                <p>
+                    where the posterior mean is:
+                </p>
+
+                <div class="math-block">
+                    $$\tilde{\boldsymbol{\mu}}_t(\mathbf{x}_t, \mathbf{x}_0) = \frac{\sqrt{\bar{\alpha}_{t-1}} \beta_t}{1 - \bar{\alpha}_t} \mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \mathbf{x}_t$$
+                </div>
+
+                <p>
+                    Ho et al.'s crucial insight: instead of parameterizing the model to predict
+                    $\boldsymbol{\mu}_\theta$ directly, <strong>reparameterize to predict the noise</strong>
+                    $\boldsymbol{\epsilon}$. Substituting
+                    $\mathbf{x}_0 = \frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t - \sqrt{1 - \bar{\alpha}_t}\, \boldsymbol{\epsilon})$
+                    into the posterior mean gives:
+                </p>
+
+                <div class="math-block">
+                    $$\boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right)$$
+                </div>
+
+                <p>
+                    The simplified training objective becomes stunningly simple:
+                </p>
+
+                <div class="math-block">
+                    $$\mathcal{L}_{simple}(\theta) = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}} \left[ \left\| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\sqrt{\bar{\alpha}_t}\, \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\, \boldsymbol{\epsilon}, \, t) \right\|^2 \right]$$
+                </div>
+
+                <p>
+                    That's it. Sample a timestep, sample noise, corrupt data, predict the noise.
+                    This simple objective -- dropping the ELBO weighting terms -- actually produced
+                    better samples in practice.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">THE CONNECTION</div>
+                    <p>
+                        Here's the punchline: DDPM's noise prediction $\boldsymbol{\epsilon}_\theta$
+                        and NCSN's score estimation $\mathbf{s}_\theta$ are the <em>same thing</em>
+                        up to scaling. Specifically:
+                        $$\mathbf{s}_\theta(\mathbf{x}_t, t) = -\frac{\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)}{\sqrt{1 - \bar{\alpha}_t}}$$
+                        Predicting the noise <em>is</em> estimating the score. The two lines of work
+                        converged to the same mathematical object from completely different starting points.
+                    </p>
+                </div>
+
+                <h3>Improved DDPM (Nichol &amp; Dhariwal, 2021)</h3>
+
+                <p>
+                    Nichol &amp; Dhariwal improved upon DDPM with several practical contributions:
+                </p>
+
+                <ul>
+                    <li><strong>Learned variance</strong>: Instead of fixing $\sigma_t^2 = \beta_t$ or $\sigma_t^2 = \tilde{\beta}_t$, they parameterize $\sigma_t^2$ as an interpolation $\exp(v \log \beta_t + (1-v) \log \tilde{\beta}_t)$ where $v$ is a learned output, enabling the model to adapt the noise level per timestep.</li>
+                    <li><strong>Cosine noise schedule</strong>: Replaced the linear $\beta_t$ schedule with $\bar{\alpha}_t = \frac{f(t)}{f(0)}$ where $f(t) = \cos\left(\frac{t/T + s}{1+s} \cdot \frac{\pi}{2}\right)^2$, which avoids destroying too much information too quickly at early timesteps.</li>
+                    <li><strong>Hybrid objective</strong>: Combined the simple $\mathcal{L}_{simple}$ (for $\boldsymbol{\epsilon}$-prediction quality) with the full variational $\mathcal{L}_{vlb}$ (for learning variances), preventing training instabilities.</li>
+                </ul>
+
+                <h3>Classifier-Free Guidance (Ho &amp; Salimans, 2022)</h3>
+
+                <p>
+                    For conditional generation (e.g., text-to-image), <strong>classifier-free guidance</strong>
+                    became the standard approach. The idea: train a single model that handles both
+                    conditional and unconditional generation by randomly dropping the conditioning
+                    signal $\mathbf{c}$ during training. At inference, interpolate between the
+                    conditional and unconditional predictions:
+                </p>
+
+                <div class="math-block">
+                    $$\hat{\boldsymbol{\epsilon}}_\theta(\mathbf{x}_t, \mathbf{c}) = (1 + w) \, \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \mathbf{c}) - w \, \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \varnothing)$$
+                </div>
+
+                <p>
+                    where $w > 0$ is the guidance scale. In score function language, this is equivalent to:
+                </p>
+
+                <div class="math-block">
+                    $$\hat{\mathbf{s}}(\mathbf{x}_t, \mathbf{c}) = \nabla_{\mathbf{x}_t} \log p_t(\mathbf{x}_t) + (1 + w) \nabla_{\mathbf{x}_t} \log p_t(\mathbf{c} | \mathbf{x}_t)$$
+                </div>
+
+                <p>
+                    Higher guidance scale = more faithful to the condition, at the cost of diversity.
+                    This technique is used in virtually every modern text-to-image model.
+                </p>
+
+                <h2>07 // THE SDE UNIFICATION</h2>
+
+                <p>
+                    Song et al. (2021) provided the grand unification. They showed that both NCSN and
+                    DDPM are discretizations of <strong>stochastic differential equations</strong>.
+                    The forward process is a continuous-time SDE:
                 </p>
 
                 <div class="math-block">
@@ -178,8 +437,18 @@
                 </div>
 
                 <p>
-                    where $\mathbf{w}$ is a Wiener process. The remarkable result from Anderson (1982) is
-                    that the <strong>reverse-time SDE</strong> is:
+                    where $\mathbf{w}$ is a Wiener process. Different choices of $\mathbf{f}$ and $g$
+                    recover different models:
+                </p>
+
+                <ul>
+                    <li><strong>VE SDE</strong> (Variance Exploding): $\mathbf{f} = \mathbf{0}$, $g(t) = \sqrt{\frac{d[\sigma^2(t)]}{dt}}$ -- recovers NCSN</li>
+                    <li><strong>VP SDE</strong> (Variance Preserving): $\mathbf{f} = -\frac{1}{2}\beta(t)\mathbf{x}$, $g(t) = \sqrt{\beta(t)}$ -- recovers DDPM</li>
+                    <li><strong>sub-VP SDE</strong>: a variant with less variance at intermediate times</li>
+                </ul>
+
+                <p>
+                    The remarkable result from Anderson (1982) is that the <strong>reverse-time SDE</strong> is:
                 </p>
 
                 <div class="math-block">
@@ -187,50 +456,101 @@
                 </div>
 
                 <p>
-                    The only unknown in this reverse SDE is $\nabla_{\mathbf{x}} \log p_t(\mathbf{x})$ --
-                    the score function at time $t$. If we can estimate it (using score matching!),
-                    we can run the reverse process and <strong>generate samples from the data distribution</strong>.
+                    The only unknown is $\nabla_{\mathbf{x}} \log p_t(\mathbf{x})$ -- the score at time $t$.
+                    Estimate it with a neural network trained via denoising score matching, then solve the
+                    reverse SDE to generate samples.
                 </p>
 
-                <h2>06 // PUTTING IT ALL TOGETHER</h2>
-
                 <p>
-                    The training objective for a time-conditional score network $\mathbf{s}_\theta(\mathbf{x}, t)$
-                    combines everything:
+                    Even better, there's a deterministic counterpart -- the <strong>probability flow ODE</strong>:
                 </p>
 
                 <div class="math-block">
-                    $$\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0, T)} \mathbb{E}_{\mathbf{x}(0)} \mathbb{E}_{\mathbf{x}(t) | \mathbf{x}(0)} \left[ \lambda(t) \left\| \mathbf{s}_\theta(\mathbf{x}(t), t) - \nabla_{\mathbf{x}(t)} \log p_{0t}(\mathbf{x}(t) | \mathbf{x}(0)) \right\|^2 \right]$$
+                    $$d\mathbf{x} = \left[\mathbf{f}(\mathbf{x}, t) - \frac{1}{2}g(t)^2 \nabla_{\mathbf{x}} \log p_t(\mathbf{x})\right] dt$$
                 </div>
 
                 <p>
-                    where $\lambda(t)$ is a weighting function. In practice, for a Variance Preserving (VP)
-                    process with noise schedule $\beta(t)$:
+                    This ODE defines the same marginal distributions $p_t(\mathbf{x})$ as the SDE but
+                    without stochasticity. It enables exact likelihood computation, deterministic
+                    encoding, and faster sampling with adaptive ODE solvers.
+                </p>
+
+                <h2>08 // THE TRAINING OBJECTIVE (UNIFIED)</h2>
+
+                <p>
+                    The unified training objective for a time-conditional score network
+                    $\mathbf{s}_\theta(\mathbf{x}, t)$ is:
+                </p>
+
+                <div class="math-block">
+                    $$\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0, T)} \, \mathbb{E}_{\mathbf{x}(0) \sim p_0} \, \mathbb{E}_{\mathbf{x}(t) \sim p_{0t}(\cdot|\mathbf{x}(0))} \left[ \lambda(t) \left\| \mathbf{s}_\theta(\mathbf{x}(t), t) - \nabla_{\mathbf{x}(t)} \log p_{0t}(\mathbf{x}(t) | \mathbf{x}(0)) \right\|^2 \right]$$
+                </div>
+
+                <p>
+                    For the VP SDE (DDPM), the transition kernel is
+                    $p_{0t}(\mathbf{x}(t) | \mathbf{x}(0)) = \mathcal{N}(\mathbf{x}(t); \sqrt{\bar{\alpha}(t)}\,\mathbf{x}(0), (1-\bar{\alpha}(t))\mathbf{I})$,
+                    and the conditional score is $-\boldsymbol{\epsilon}/\sqrt{1-\bar{\alpha}(t)}$. Three
+                    equivalent parameterizations exist:
                 </p>
 
                 <ul>
-                    <li>The forward kernel is $p_{0t}(\mathbf{x}(t) | \mathbf{x}(0)) = \mathcal{N}(\mathbf{x}(t); \alpha(t)\mathbf{x}(0), \sigma^2(t)\mathbf{I})$</li>
-                    <li>The score becomes $-\boldsymbol{\epsilon} / \sigma(t)$, recovering the $\boldsymbol{\epsilon}$-prediction formulation used by DDPM</li>
-                    <li>Sampling is done via discretized reverse SDE or ODE solvers</li>
+                    <li><strong>$\boldsymbol{\epsilon}$-prediction</strong>: predict the noise $\boldsymbol{\epsilon}$ (DDPM style)</li>
+                    <li><strong>Score prediction</strong>: predict $\nabla_\mathbf{x} \log p_t(\mathbf{x})$ (NCSN style)</li>
+                    <li><strong>$\mathbf{x}_0$-prediction</strong>: predict the clean data directly</li>
                 </ul>
 
-                <h2>07 // SUMMARY</h2>
+                <p>
+                    They're all equivalent up to a time-dependent scaling factor. The choice of
+                    parameterization (and weighting $\lambda(t)$) affects sample quality vs. likelihood
+                    in practice, but the underlying math is the same.
+                </p>
+
+                <h2>09 // FAST SAMPLING: DDIM AND BEYOND</h2>
 
                 <p>
-                    The pipeline, from 30,000 feet:
+                    The original DDPM requires ~1000 denoising steps to generate a sample. Song et al.
+                    (2021b) introduced <strong>DDIM</strong> (Denoising Diffusion Implicit Models), which
+                    defines a family of non-Markovian forward processes that share the same marginals
+                    $q(\mathbf{x}_t | \mathbf{x}_0)$ but allow deterministic sampling:
+                </p>
+
+                <div class="math-block">
+                    $$\mathbf{x}_{t-1} = \sqrt{\bar{\alpha}_{t-1}} \underbrace{\left( \frac{\mathbf{x}_t - \sqrt{1-\bar{\alpha}_t}\, \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)}{\sqrt{\bar{\alpha}_t}} \right)}_{\text{predicted } \mathbf{x}_0} + \underbrace{\sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2} \cdot \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)}_{\text{direction pointing to } \mathbf{x}_t} + \underbrace{\sigma_t \boldsymbol{\epsilon}_t}_{\text{random noise}}$$
+                </div>
+
+                <p>
+                    When $\sigma_t = 0$, the process is fully deterministic -- this is the DDIM sampler,
+                    which is essentially a discretization of the probability flow ODE. It enables sampling
+                    in as few as 10-50 steps with reasonable quality.
+                </p>
+
+                <p>
+                    This opened the floodgates for fast sampling research: DPM-Solver, consistency models,
+                    progressive distillation, and other techniques that further reduce the number of
+                    required function evaluations.
+                </p>
+
+                <h2>10 // SUMMARY</h2>
+
+                <p>
+                    The full picture, from 30,000 feet:
                 </p>
 
                 <ol>
                     <li><strong>Score function</strong> = gradient of log-density (avoids normalizing constants)</li>
                     <li><strong>Score matching</strong> = learn the score without knowing the true density</li>
                     <li><strong>Denoising score matching</strong> = learning to denoise <em>is</em> learning the score</li>
-                    <li><strong>Diffusion models</strong> = denoising score matching across a continuous spectrum of noise levels, enabling generation via reverse-time SDEs</li>
+                    <li><strong>NCSN</strong> = denoising score matching across multiple discrete noise levels + annealed Langevin sampling</li>
+                    <li><strong>DDPM</strong> = variational approach that <em>independently</em> arrived at noise prediction (= score estimation)</li>
+                    <li><strong>SDE framework</strong> = continuous-time unification showing NCSN and DDPM are discretizations of the same family of SDEs</li>
+                    <li><strong>DDIM / fast sampling</strong> = deterministic sampling via probability flow ODE, enabling practical generation speeds</li>
                 </ol>
 
                 <p>
-                    From an elegant statistical idea to the engine behind modern image generation -- score
-                    matching is one of those rare concepts where the math is genuinely beautiful <em>and</em>
-                    practically useful.
+                    Two research communities -- one thinking about score functions and Langevin dynamics,
+                    the other about variational bounds and hierarchical latent variables -- converged on
+                    the same mathematical object. The score function is the bridge, and denoising is the
+                    universal language they both speak.
                 </p>
 
                 <blockquote>
@@ -240,7 +560,7 @@
                     </p>
                 </blockquote>
 
-                <h2>08 // REFERENCES</h2>
+                <h2>11 // REFERENCES</h2>
 
                 <div class="references">
                     <ol class="ref-list">
@@ -257,39 +577,52 @@
                             <a href="https://doi.org/10.1162/NECO_a_00142" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
                         </li>
                         <li id="ref-3">
+                            <span class="ref-authors">Sohl-Dickstein, J., Weiss, E., Maheswaranathan, N. &amp; Ganguli, S.</span>
+                            <span class="ref-title">Deep Unsupervised Learning using Nonequilibrium Thermodynamics.</span>
+                            <span class="ref-venue">ICML 2015.</span>
+                            <a href="https://arxiv.org/abs/1503.03585" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-4">
                             <span class="ref-authors">Song, Y. &amp; Ermon, S.</span>
                             <span class="ref-title">Generative Modeling by Estimating Gradients of the Data Distribution.</span>
                             <span class="ref-venue">NeurIPS 2019.</span>
                             <a href="https://arxiv.org/abs/1907.05600" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
                         </li>
-                        <li id="ref-4">
+                        <li id="ref-5">
                             <span class="ref-authors">Ho, J., Jain, A. &amp; Abbeel, P.</span>
                             <span class="ref-title">Denoising Diffusion Probabilistic Models.</span>
                             <span class="ref-venue">NeurIPS 2020.</span>
                             <a href="https://arxiv.org/abs/2006.11239" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
                         </li>
-                        <li id="ref-5">
+                        <li id="ref-6">
                             <span class="ref-authors">Song, Y., Sohl-Dickstein, J., Kingma, D. P., Kumar, A., Ermon, S. &amp; Poole, B.</span>
                             <span class="ref-title">Score-Based Generative Modeling through Stochastic Differential Equations.</span>
                             <span class="ref-venue">ICLR 2021.</span>
                             <a href="https://arxiv.org/abs/2011.13456" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
                         </li>
-                        <li id="ref-6">
+                        <li id="ref-7">
+                            <span class="ref-authors">Nichol, A. &amp; Dhariwal, P.</span>
+                            <span class="ref-title">Improved Denoising Diffusion Probabilistic Models.</span>
+                            <span class="ref-venue">ICML 2021.</span>
+                            <a href="https://arxiv.org/abs/2102.09672" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-8">
+                            <span class="ref-authors">Song, J., Meng, C. &amp; Ermon, S.</span>
+                            <span class="ref-title">Denoising Diffusion Implicit Models.</span>
+                            <span class="ref-venue">ICLR 2021.</span>
+                            <a href="https://arxiv.org/abs/2010.02502" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-9">
+                            <span class="ref-authors">Ho, J. &amp; Salimans, T.</span>
+                            <span class="ref-title">Classifier-Free Diffusion Guidance.</span>
+                            <span class="ref-venue">NeurIPS 2022 Workshop on Deep Generative Models and Downstream Applications.</span>
+                            <a href="https://arxiv.org/abs/2207.12598" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-10">
                             <span class="ref-authors">Anderson, B. D. O.</span>
                             <span class="ref-title">Reverse-time Diffusion Equation Models.</span>
                             <span class="ref-venue">Stochastic Processes and their Applications, 12(3), 313-326, 1982.</span>
                             <a href="https://doi.org/10.1016/0304-4149(82)90051-5" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
-                        </li>
-                        <li id="ref-7">
-                            <span class="ref-authors">Xin, H. &amp; Zhu, M. Y.</span>
-                            <span class="ref-title">Score-based Image-to-Image Regression with Synchronized Diffusion.</span>
-                            <span class="ref-venue">IEEE ICMLA, 2022.</span>
-                        </li>
-                        <li id="ref-8">
-                            <span class="ref-authors">Xin, H.</span>
-                            <span class="ref-title">Generative Image-to-Image Regression Based on Score Matching Models.</span>
-                            <span class="ref-venue">Purdue University Graduate School, Ph.D. Thesis, 2024.</span>
-                            <a href="https://doi.org/10.25394/PGS.22242529.v1" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
                         </li>
                     </ol>
                 </div>
