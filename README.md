@@ -1,49 +1,38 @@
-# 个人作品集网站模板 (Personal Portfolio Template)
+# haoxin.github.io
 
-这是一个简洁、现代的个人作品集网站模板，专为开发者和技术人员设计。它使用纯 HTML 和 CSS 构建，无需复杂的构建工具，非常适合托管在 GitHub Pages 上。
+Personal website and tech blog for Hao Xin -- Senior ML Scientist at Apple.
 
-## 如何使用
+**Live site:** [muserhao.github.io/haoxin.github.io](https://muserhao.github.io/haoxin.github.io/)
 
-这个模板已经预填充了示例内容。你可以通过简单的编辑来替换成你自己的信息。
+## What's here
 
-### 1. 修改基本信息
+- **Portfolio** -- About, experience, education, skills, and publications
+- **Blog** -- Tech blog with KaTeX math rendering, tag filtering, and neon-themed code/math blocks
 
-打开 `index.html` 文件，你可以在其中找到并修改以下内容：
+## Structure
 
-*   **姓名**: 搜索 `Alex Chen` 并替换为你自己的名字。
-*   **职业/头衔**: 搜索 `Software Engineer | Full Stack Developer` 并修改为你的职位。
-*   **简介**: 在 `id="about"` 的部分，修改 `<p>` 标签内的自我介绍文字。
-
-### 2. 修改技能 (Skills)
-
-在 `id="skills"` 的部分，你会看到一系列的 `<div class="skill-tag">`。你可以修改其中的文字，或者添加/删除整行来调整你的技能列表。
-
-```html
-<div class="skill-tag">你的技能 1</div>
-<div class="skill-tag">你的技能 2</div>
+```
+index.html          # Main portfolio page
+style.css           # Global styles (neon Tokyo cyberpunk theme)
+blog/
+  index.html        # Blog listing page with tag filters
+  blog.css          # Blog-specific styles
+  posts/
+    *.html          # Individual blog posts
 ```
 
-### 3. 修改项目 (Projects)
+## Adding a new blog post
 
-在 `id="projects"` 的部分，有三个示例项目卡片 (`project-card`)。你可以：
+1. Create a new `.html` file in `blog/posts/` (copy an existing post as a template)
+2. Add KaTeX to the `<head>` for math support -- use `$...$` for inline and `$$...$$` for display math
+3. Add a card entry in `blog/index.html`
+4. Optionally update the preview on `index.html`
+5. Commit and push to `main` -- the site updates automatically via GitHub Pages
 
-*   修改 `<h3>` 标签内的项目名称。
-*   修改 `<p>` 标签内的项目描述。
-*   修改链接 `href="#"` 指向你的真实项目地址。
+## Tech stack
 
-### 4. 修改联系方式
-
-在 `id="contact"` 的部分，修改邮箱地址和社交媒体链接。
-
-## 自定义样式
-
-所有的样式都定义在 `style.css` 文件中。如果你懂一些 CSS，可以随意修改颜色、字体和布局。
-
-*   **主色调**: 搜索 `#3498db` (蓝色) 并替换为你喜欢的颜色代码。
-*   **背景色**: 搜索 `#f8f9fa` (浅灰) 进行修改。
-
-## 部署到 GitHub Pages
-
-1.  将此仓库的所有文件上传到你的 GitHub 仓库。
-2.  在仓库的 "Settings" -> "Pages" 中，选择 `main` (或 `master`) 分支作为 Source。
-3.  点击 Save，你的网站几分钟后就会上线！
+- Plain HTML/CSS/JS (no build tools, no frameworks)
+- [KaTeX](https://katex.org/) for LaTeX math rendering
+- [Font Awesome](https://fontawesome.com/) for icons
+- [Google Fonts](https://fonts.google.com/) (Orbitron, Rajdhani, Share Tech Mono)
+- GitHub Pages for hosting
