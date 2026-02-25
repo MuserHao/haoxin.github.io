@@ -19,6 +19,9 @@
             ],
             throwOnError: false
         });"></script>
+    <script>
+        (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t)})();
+    </script>
 </head>
 <body>
     <div class="grid-bg"></div>
@@ -31,6 +34,13 @@
                 <li><a href="../../index.html" class="nav-link">HOME</a></li>
                 <li><a href="../index.html" class="nav-link active">BLOG</a></li>
                 <li><a href="../../index.html#contact" class="nav-link">CONTACT</a></li>
+                <li>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-toggle-icon-light">&#9728;</span>
+                        <span class="theme-toggle-slider"></span>
+                        <span class="theme-toggle-icon-dark">&#9790;</span>
+                    </button>
+                </li>
             </ul>
             <div class="hamburger" id="hamburger">
                 <span></span>
@@ -634,37 +644,9 @@
         </div>
     </footer>
 
+    <script src="../../shared.js"></script>
     <script>
-        // Particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.animationDelay = Math.random() * 6 + 's';
-                p.style.animationDuration = (Math.random() * 4 + 3) + 's';
-                const size = Math.random() * 4 + 1;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                const colors = ['#ff006e', '#00f0ff', '#b026ff', '#39ff14'];
-                p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                container.appendChild(p);
-            }
-        }
-        createParticles();
-
-        // Navbar scroll
-        window.addEventListener('scroll', () => {
-            document.querySelector('header').classList.toggle('scrolled', window.pageYOffset > 50);
-        });
-
-        // Hamburger
-        document.getElementById('hamburger').addEventListener('click', () => {
-            document.querySelector('.nav-links').classList.toggle('active');
-            document.getElementById('hamburger').classList.toggle('active');
-        });
+        createParticles(30);
     </script>
 </body>
 </html>

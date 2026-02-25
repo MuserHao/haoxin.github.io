@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="blog.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+        (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t)})();
+    </script>
 </head>
 <body>
     <div class="grid-bg"></div>
@@ -21,6 +24,13 @@
                 <li><a href="../index.html#about" class="nav-link">ABOUT</a></li>
                 <li><a href="index.html" class="nav-link active">BLOG</a></li>
                 <li><a href="../index.html#contact" class="nav-link">CONTACT</a></li>
+                <li>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-toggle-icon-light">&#9728;</span>
+                        <span class="theme-toggle-slider"></span>
+                        <span class="theme-toggle-icon-dark">&#9790;</span>
+                    </button>
+                </li>
             </ul>
             <div class="hamburger" id="hamburger">
                 <span></span>
@@ -71,40 +81,11 @@
         </div>
     </footer>
 
+    <script src="../shared.js"></script>
     <script>
-        // Particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.animationDelay = Math.random() * 6 + 's';
-                p.style.animationDuration = (Math.random() * 4 + 3) + 's';
-                const size = Math.random() * 4 + 1;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                const colors = ['#ff006e', '#00f0ff', '#b026ff', '#39ff14'];
-                p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                container.appendChild(p);
-            }
-        }
-        createParticles();
+        // Page-specific: particles + filter
+        createParticles(30);
 
-        // Navbar scroll
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            header.classList.toggle('scrolled', window.pageYOffset > 50);
-        });
-
-        // Hamburger
-        document.getElementById('hamburger').addEventListener('click', () => {
-            document.querySelector('.nav-links').classList.toggle('active');
-            document.getElementById('hamburger').classList.toggle('active');
-        });
-
-        // Filter
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -119,12 +100,6 @@
                 });
             });
         });
-
-        // Fade in
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('section').forEach(s => observer.observe(s));
     </script>
 </body>
 </html>

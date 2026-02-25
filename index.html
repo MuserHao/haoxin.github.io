@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="blog/blog.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+        (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t)})();
+    </script>
 </head>
 <body>
     <!-- Animated background grid -->
@@ -28,6 +31,13 @@
                 <li><a href="#publications" class="nav-link">RESEARCH</a></li>
                 <li><a href="blog/index.html" class="nav-link">BLOG</a></li>
                 <li><a href="#contact" class="nav-link">CONTACT</a></li>
+                <li>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-toggle-icon-light">&#9728;</span>
+                        <span class="theme-toggle-slider"></span>
+                        <span class="theme-toggle-icon-dark">&#9790;</span>
+                    </button>
+                </li>
             </ul>
             <div class="hamburger" id="hamburger">
                 <span></span>
@@ -390,27 +400,10 @@
         </div>
     </footer>
 
+    <script src="shared.js"></script>
     <script>
-        // ========== PARTICLES ==========
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const count = 50;
-            for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 3) + 's';
-                const size = Math.random() * 4 + 1;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                const colors = ['#ff006e', '#00f0ff', '#b026ff', '#39ff14'];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                container.appendChild(particle);
-            }
-        }
-        createParticles();
+        // ========== PAGE-SPECIFIC: PARTICLES (higher count for main page) ==========
+        createParticles(50);
 
         // ========== TYPEWRITER ==========
         const phrases = [
@@ -472,22 +465,16 @@
             });
         }
 
-        // ========== INTERSECTION OBSERVER ==========
-        const observerOptions = { threshold: 0.2 };
-        const observer = new IntersectionObserver((entries) => {
+        // ========== ABOUT SECTION OBSERVER ==========
+        const aboutObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    if (entry.target.classList.contains('about')) {
-                        animateCounters();
-                    }
+                if (entry.isIntersecting && entry.target.classList.contains('about')) {
+                    animateCounters();
                 }
             });
-        }, observerOptions);
-
-        document.querySelectorAll('section').forEach(section => {
-            observer.observe(section);
-        });
+        }, { threshold: 0.2 });
+        const aboutSection = document.querySelector('.about');
+        if (aboutSection) aboutObserver.observe(aboutSection);
 
         // ========== SMOOTH SCROLL ==========
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -497,23 +484,9 @@
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-                // Close mobile menu if open
                 document.querySelector('.nav-links').classList.remove('active');
                 document.getElementById('hamburger').classList.remove('active');
             });
-        });
-
-        // ========== NAVBAR SCROLL EFFECT ==========
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            const currentScroll = window.pageYOffset;
-            if (currentScroll > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-            lastScroll = currentScroll;
         });
 
         // ========== SKILL TAG HOVER EFFECT ==========
@@ -522,12 +495,6 @@
                 const level = this.getAttribute('data-level');
                 this.style.setProperty('--skill-level', level + '%');
             });
-        });
-
-        // ========== HAMBURGER MENU ==========
-        document.getElementById('hamburger').addEventListener('click', () => {
-            document.querySelector('.nav-links').classList.toggle('active');
-            document.getElementById('hamburger').classList.toggle('active');
         });
 
         // ========== NEON CARD TILT EFFECT ==========
