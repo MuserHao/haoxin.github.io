@@ -448,6 +448,28 @@ section.visible {
     text-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
 }
 
+/* ========== INTRO BLOCK ========== */
+.intro-block {
+    max-width: 800px;
+    margin: -2rem auto 3rem;
+    padding: 2rem;
+    border-left: 3px solid var(--neon-cyan);
+    background: rgba(0, 240, 255, 0.03);
+    border-radius: 0 8px 8px 0;
+}
+
+.intro-block p {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    line-height: 1.9;
+    margin-bottom: 1rem;
+}
+
+.intro-block p:last-child {
+    margin-bottom: 0;
+}
+
 /* ========== NEON CARD ========== */
 .neon-card {
     background: var(--bg-card);
