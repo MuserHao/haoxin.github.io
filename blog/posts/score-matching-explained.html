@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Matching Explained | Hao Xin</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../blog.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div id="particles"></div>
+
+    <header>
+        <nav>
+            <a href="../../index.html" class="logo" data-text="HAO.XIN">HAO.XIN</a>
+            <ul class="nav-links">
+                <li><a href="../../index.html" class="nav-link">HOME</a></li>
+                <li><a href="../index.html" class="nav-link active">BLOG</a></li>
+                <li><a href="../../index.html#contact" class="nav-link">CONTACT</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="post-main">
+        <article>
+            <div class="post-header">
+                <div class="post-meta">
+                    <span class="blog-date"><i class="fas fa-clock"></i> Feb 25, 2026</span>
+                    <span class="read-time"><i class="fas fa-book-open"></i> 10 min read</span>
+                </div>
+                <div class="blog-tags" style="justify-content: center; margin-bottom: 1.5rem;">
+                    <span class="blog-tag">DIFFUSION</span>
+                    <span class="blog-tag">MATH</span>
+                    <span class="blog-tag">TUTORIAL</span>
+                </div>
+                <h1 class="post-title">Score Matching Explained: From Theory to Diffusion Models</h1>
+                <p class="post-subtitle">// the math behind why your AI can draw pictures</p>
+                <div class="post-divider"></div>
+            </div>
+
+            <div class="post-content">
+                <h2>01 // INTRODUCTION</h2>
+
+                <p>
+                    If you've been following the generative AI space, you've probably heard of
+                    <strong>diffusion models</strong> -- the family of models behind DALL-E, Stable Diffusion,
+                    and many other image generators. But at the mathematical core of these models lies
+                    a beautifully elegant concept: <strong>score matching</strong>.
+                </p>
+
+                <p>
+                    In this post, we'll build up the theory from scratch. No hand-waving, no "it's
+                    just denoising" -- we're going full math mode. Buckle up.
+                </p>
+
+                <blockquote>
+                    <p>"The score function is the gradient of the log-density. That's it. That's the tweet."</p>
+                </blockquote>
+
+                <h2>02 // THE SCORE FUNCTION</h2>
+
+                <p>
+                    Given a probability density $p(\mathbf{x})$, the <strong>score function</strong>
+                    is defined as the gradient of the log-density:
+                </p>
+
+                <div class="math-block">
+                    $$\mathbf{s}(\mathbf{x}) = \nabla_{\mathbf{x}} \log p(\mathbf{x})$$
+                </div>
+
+                <p>
+                    Why is this useful? The score function tells us the direction in which the
+                    log-density increases most rapidly. It points "uphill" toward regions of high
+                    probability, without requiring us to know the normalizing constant of $p(\mathbf{x})$.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">KEY INSIGHT</div>
+                    <p>
+                        Unlike the density $p(\mathbf{x})$ itself, the score function
+                        $\nabla_{\mathbf{x}} \log p(\mathbf{x})$ doesn't depend on the partition
+                        function $Z$. If $p(\mathbf{x}) = \frac{1}{Z}\tilde{p}(\mathbf{x})$, then
+                        $\nabla_{\mathbf{x}} \log p(\mathbf{x}) = \nabla_{\mathbf{x}} \log \tilde{p}(\mathbf{x})$
+                        since $\nabla_{\mathbf{x}} \log Z = 0$.
+                    </p>
+                </div>
+
+                <h2>03 // SCORE MATCHING OBJECTIVE</h2>
+
+                <p>
+                    The goal of <strong>score matching</strong> (Hyvarinen, 2005) is to learn a model
+                    $\mathbf{s}_\theta(\mathbf{x})$ that approximates the true score
+                    $\nabla_{\mathbf{x}} \log p(\mathbf{x})$. The naive approach would minimize:
+                </p>
+
+                <div class="math-block">
+                    $$J(\theta) = \frac{1}{2} \mathbb{E}_{p(\mathbf{x})} \left[ \left\| \mathbf{s}_\theta(\mathbf{x}) - \nabla_{\mathbf{x}} \log p(\mathbf{x}) \right\|^2 \right]$$
+                </div>
+
+                <p>
+                    But wait -- we don't know $\nabla_{\mathbf{x}} \log p(\mathbf{x})$! That's the whole
+                    point. Through a clever integration by parts trick, this objective can be rewritten as:
+                </p>
+
+                <div class="math-block">
+                    $$J(\theta) = \mathbb{E}_{p(\mathbf{x})} \left[ \text{tr}(\nabla_{\mathbf{x}} \mathbf{s}_\theta(\mathbf{x})) + \frac{1}{2} \left\| \mathbf{s}_\theta(\mathbf{x}) \right\|^2 \right] + \text{const}$$
+                </div>
+
+                <p>
+                    This is the <strong>explicit score matching</strong> objective. The key insight is that
+                    the first term involves the <em>Jacobian trace</em> of the score model, which only
+                    depends on our model -- not on the unknown data distribution.
+                </p>
+
+                <h2>04 // DENOISING SCORE MATCHING</h2>
+
+                <p>
+                    Computing the Jacobian trace can be expensive. <strong>Denoising score matching</strong>
+                    (Vincent, 2011) offers an elegant alternative. The idea: instead of matching the score
+                    of $p(\mathbf{x})$, match the score of a <em>noisy</em> version $p_\sigma(\tilde{\mathbf{x}})$.
+                </p>
+
+                <p>
+                    If we corrupt data with Gaussian noise $\tilde{\mathbf{x}} = \mathbf{x} + \sigma\boldsymbol{\epsilon}$
+                    where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$, then the
+                    conditional score has a simple closed form:
+                </p>
+
+                <div class="math-block">
+                    $$\nabla_{\tilde{\mathbf{x}}} \log p(\tilde{\mathbf{x}} | \mathbf{x}) = -\frac{\tilde{\mathbf{x}} - \mathbf{x}}{\sigma^2} = -\frac{\boldsymbol{\epsilon}}{\sigma}$$
+                </div>
+
+                <p>
+                    The denoising score matching objective becomes:
+                </p>
+
+                <div class="math-block">
+                    $$J_{DSM}(\theta) = \frac{1}{2} \mathbb{E}_{p(\mathbf{x})} \mathbb{E}_{\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})} \left[ \left\| \mathbf{s}_\theta(\mathbf{x} + \sigma\boldsymbol{\epsilon}) + \frac{\boldsymbol{\epsilon}}{\sigma} \right\|^2 \right]$$
+                </div>
+
+                <div class="info-box">
+                    <div class="info-title">INTUITION</div>
+                    <p>
+                        Denoising score matching says: "train a network to predict the direction back
+                        to the clean data from its noisy version." This is essentially what diffusion
+                        models do -- they learn to denoise, and denoising <em>is</em> score estimation.
+                    </p>
+                </div>
+
+                <h2>05 // FROM SCORES TO DIFFUSION</h2>
+
+                <p>
+                    Modern diffusion models extend denoising score matching across <em>multiple noise levels</em>.
+                    Consider a continuous-time forward process defined by the SDE:
+                </p>
+
+                <div class="math-block">
+                    $$d\mathbf{x} = \mathbf{f}(\mathbf{x}, t)\,dt + g(t)\,d\mathbf{w}$$
+                </div>
+
+                <p>
+                    where $\mathbf{w}$ is a Wiener process. The remarkable result from Anderson (1982) is
+                    that the <strong>reverse-time SDE</strong> is:
+                </p>
+
+                <div class="math-block">
+                    $$d\mathbf{x} = \left[\mathbf{f}(\mathbf{x}, t) - g(t)^2 \nabla_{\mathbf{x}} \log p_t(\mathbf{x})\right] dt + g(t)\,d\bar{\mathbf{w}}$$
+                </div>
+
+                <p>
+                    The only unknown in this reverse SDE is $\nabla_{\mathbf{x}} \log p_t(\mathbf{x})$ --
+                    the score function at time $t$. If we can estimate it (using score matching!),
+                    we can run the reverse process and <strong>generate samples from the data distribution</strong>.
+                </p>
+
+                <h2>06 // PUTTING IT ALL TOGETHER</h2>
+
+                <p>
+                    The training objective for a time-conditional score network $\mathbf{s}_\theta(\mathbf{x}, t)$
+                    combines everything:
+                </p>
+
+                <div class="math-block">
+                    $$\mathcal{L}(\theta) = \mathbb{E}_{t \sim \mathcal{U}(0, T)} \mathbb{E}_{\mathbf{x}(0)} \mathbb{E}_{\mathbf{x}(t) | \mathbf{x}(0)} \left[ \lambda(t) \left\| \mathbf{s}_\theta(\mathbf{x}(t), t) - \nabla_{\mathbf{x}(t)} \log p_{0t}(\mathbf{x}(t) | \mathbf{x}(0)) \right\|^2 \right]$$
+                </div>
+
+                <p>
+                    where $\lambda(t)$ is a weighting function. In practice, for a Variance Preserving (VP)
+                    process with noise schedule $\beta(t)$:
+                </p>
+
+                <ul>
+                    <li>The forward kernel is $p_{0t}(\mathbf{x}(t) | \mathbf{x}(0)) = \mathcal{N}(\mathbf{x}(t); \alpha(t)\mathbf{x}(0), \sigma^2(t)\mathbf{I})$</li>
+                    <li>The score becomes $-\boldsymbol{\epsilon} / \sigma(t)$, recovering the $\boldsymbol{\epsilon}$-prediction formulation used by DDPM</li>
+                    <li>Sampling is done via discretized reverse SDE or ODE solvers</li>
+                </ul>
+
+                <h2>07 // SUMMARY</h2>
+
+                <p>
+                    The pipeline, from 30,000 feet:
+                </p>
+
+                <ol>
+                    <li><strong>Score function</strong> = gradient of log-density (avoids normalizing constants)</li>
+                    <li><strong>Score matching</strong> = learn the score without knowing the true density</li>
+                    <li><strong>Denoising score matching</strong> = learning to denoise <em>is</em> learning the score</li>
+                    <li><strong>Diffusion models</strong> = denoising score matching across a continuous spectrum of noise levels, enabling generation via reverse-time SDEs</li>
+                </ol>
+
+                <p>
+                    From an elegant statistical idea to the engine behind modern image generation -- score
+                    matching is one of those rare concepts where the math is genuinely beautiful <em>and</em>
+                    practically useful.
+                </p>
+
+                <blockquote>
+                    <p>
+                        Next up: we'll dive into conditional score matching and how it enables
+                        image-to-image regression -- the core of my PhD thesis work. Stay tuned.
+                    </p>
+                </blockquote>
+            </div>
+        </article>
+
+        <div class="post-nav">
+            <a href="../index.html"><i class="fas fa-arrow-left"></i> BACK TO BLOG</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">// built with caffeine and mass GPU hours</p>
+            <p class="footer-copy">&copy; 2026 Hao Xin. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 6 + 's';
+                p.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                const size = Math.random() * 4 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                const colors = ['#ff006e', '#00f0ff', '#b026ff', '#39ff14'];
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            document.querySelector('header').classList.toggle('scrolled', window.pageYOffset > 50);
+        });
+
+        // Hamburger
+        document.getElementById('hamburger').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('active');
+            document.getElementById('hamburger').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
