@@ -1,7 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio | Software Engineer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <header>
+        <nav>
+            <div class="logo">MyPortfolio</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <h1>Hi, I'm <span style="color: #2c3e50;">Alex Chen</span></h1>
+            <p>Software Engineer | Full Stack Developer | Open Source Contributor</p>
+            <a href="#projects" class="btn">View My Work</a>
+        </section>
+
+        <section id="about" class="about">
+            <h2>About Me</h2>
+            <div class="about-content">
+                <div class="about-img">
+                    <img src="https://via.placeholder.com/250" alt="Profile Picture">
+                </div>
+                <div class="about-text">
+                    <p>I am a passionate software engineer with a strong background in building scalable web applications. I specialize in JavaScript (React, Node.js) and Python (Django, Flask). I enjoy solving complex problems and turning ideas into reality through code.</p>
+                    <br>
+                    <p>My journey in tech started with a curiosity for how things work, and it has evolved into a career of continuous learning and innovation. Whether it's optimizing backend performance or crafting intuitive user interfaces, I approach every project with dedication and attention to detail.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="skills">
+            <h2>My Skills</h2>
+            <div class="skills-container">
+                <div class="skill-tag">HTML5</div>
+                <div class="skill-tag">CSS3</div>
+                <div class="skill-tag">JavaScript (ES6+)</div>
+                <div class="skill-tag">React</div>
+                <div class="skill-tag">Node.js</div>
+                <div class="skill-tag">Python</div>
+                <div class="skill-tag">Django</div>
+                <div class="skill-tag">Git & GitHub</div>
+                <div class="skill-tag">SQL (PostgreSQL)</div>
+                <div class="skill-tag">Docker</div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects">
+            <h2>Featured Projects</h2>
+            <div class="projects-grid">
+                <!-- Project Card 1 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <i class="fas fa-shopping-cart fa-3x"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>E-Commerce Platform</h3>
+                        <p>A full-featured e-commerce website built with React and Node.js. Includes user authentication, product catalog, shopping cart, and Stripe payment integration.</p>
+                        <a href="#" class="project-link">View Demo &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <i class="fas fa-cloud-sun fa-3x"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>Weather Dashboard</h3>
+                        <p>A weather application that fetches real-time data from OpenWeatherMap API. Features include search by city, 5-day forecast, and dynamic background themes.</p>
+                        <a href="#" class="project-link">View Demo &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="project-card">
+                    <div class="project-img">
+                        <i class="fas fa-tasks fa-3x"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3>Task Manager API</h3>
+                        <p>A RESTful API for task management built with Django REST Framework. Supports CRUD operations, user authentication (JWT), and task categorization.</p>
+                        <a href="#" class="project-link">View Code &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Get In Touch</h2>
+            <div class="contact-info">
+                <p>I'm currently available for freelance work and full-time opportunities. If you have a project in mind or just want to say hi, feel free to send me an email!</p>
+                <p class="email"><strong>Email:</strong> alex.chen@example.com</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Alex Chen. All rights reserved.</p>
+    </footer>
 </body>
 </html>
