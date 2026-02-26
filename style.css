@@ -158,7 +158,7 @@
 }
 
 [data-theme="light"] .logo-mark {
-    filter: drop-shadow(0 0 4px rgba(0, 200, 212, 0.25));
+    filter: drop-shadow(0 0 4px rgba(0, 200, 212, 0.25)) drop-shadow(0 0 3px var(--purple-glow-md));
 }
 
 [data-theme="light"] .hero-content::before {
@@ -294,8 +294,8 @@ nav {
 }
 
 .logo-mark {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     color: var(--neon-cyan);
     filter: drop-shadow(0 0 6px var(--cyan-text-glow)) drop-shadow(0 0 20px var(--cyan-glow-md))
             drop-shadow(0 0 4px var(--purple-glow-md));
@@ -305,11 +305,12 @@ nav {
 .logo-x {
     stroke: var(--neon-purple);
     color: var(--neon-purple);
+    filter: drop-shadow(0 0 4px var(--neon-purple)) drop-shadow(0 0 8px var(--purple-text-glow));
 }
 
 .logo:hover .logo-mark {
     filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--cyan-glow-lg))
-            drop-shadow(0 0 10px var(--purple-text-glow));
+            drop-shadow(0 0 12px var(--neon-purple)) drop-shadow(0 0 24px var(--purple-text-glow));
     transform: scale(1.08);
 }
 
