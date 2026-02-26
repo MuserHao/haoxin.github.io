@@ -297,18 +297,12 @@ nav {
     width: 64px;
     height: 64px;
     color: var(--neon-cyan);
-    filter: drop-shadow(0 0 6px var(--cyan-text-glow)) drop-shadow(0 0 20px var(--cyan-glow-md))
-            drop-shadow(0 0 6px var(--purple-glow-md));
+    filter: drop-shadow(0 0 6px var(--cyan-text-glow)) drop-shadow(0 0 20px var(--cyan-glow-md));
     transition: all 0.3s ease;
 }
 
-.logo-x {
-    filter: drop-shadow(0 0 5px rgba(212,168,67,0.6)) drop-shadow(0 0 10px rgba(123,47,190,0.5));
-}
-
 .logo:hover .logo-mark {
-    filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--cyan-glow-lg))
-            drop-shadow(0 0 12px rgba(212,168,67,0.7)) drop-shadow(0 0 16px rgba(123,47,190,0.6));
+    filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--cyan-glow-lg));
     transform: scale(1.08);
 }
 

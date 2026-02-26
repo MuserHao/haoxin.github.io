@@ -43,25 +43,25 @@
             <a href="../index.html" class="logo" aria-label="HAO.XIN">
                 <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <!-- Metallic gradient: purple → gold highlight → purple -->
+                        <!-- Metallic gem gradient: purple → gold highlight → purple -->
                         <linearGradient id="xMetal" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#7B2FBE"/>
-                            <stop offset="35%" stop-color="#D4A843"/>
-                            <stop offset="50%" stop-color="#FFF1B8"/>
-                            <stop offset="65%" stop-color="#D4A843"/>
-                            <stop offset="100%" stop-color="#7B2FBE"/>
+                            <stop offset="0%" stop-color="#6A1FA0"/>
+                            <stop offset="30%" stop-color="#C49A38"/>
+                            <stop offset="45%" stop-color="#F5E6A3"/>
+                            <stop offset="55%" stop-color="#C49A38"/>
+                            <stop offset="100%" stop-color="#6A1FA0"/>
                         </linearGradient>
-                        <!-- Darker metallic for back star -->
-                        <linearGradient id="xMetalDark" x1="0%" y1="100%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#5A1F8E"/>
-                            <stop offset="40%" stop-color="#9E7A2E"/>
-                            <stop offset="50%" stop-color="#C9A84E"/>
-                            <stop offset="60%" stop-color="#9E7A2E"/>
-                            <stop offset="100%" stop-color="#5A1F8E"/>
+                        <!-- Darker facet for back star -->
+                        <linearGradient id="xMetalDark" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#4A1570"/>
+                            <stop offset="35%" stop-color="#8B6B20"/>
+                            <stop offset="50%" stop-color="#A8893A"/>
+                            <stop offset="65%" stop-color="#8B6B20"/>
+                            <stop offset="100%" stop-color="#4A1570"/>
                         </linearGradient>
                         <!-- Specular highlight -->
-                        <radialGradient id="xShine" cx="35%" cy="30%" r="50%">
-                            <stop offset="0%" stop-color="rgba(255,255,255,0.5)"/>
+                        <radialGradient id="xShine" cx="38%" cy="28%" r="40%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.45)"/>
                             <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
                         </radialGradient>
                     </defs>
@@ -72,14 +72,14 @@
                     <!-- H: triangle pointing up (vanishing-point perspective) + crossbar -->
                     <path d="M8 33 L20 5 L32 33" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
                     <line x1="12" y1="23" x2="28" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <!-- X compass: back star (cardinal directions, smaller) -->
-                    <path class="logo-x" d="M20 5 L22 16 L33 18 L22 20 L20 31 L18 20 L7 18 L18 16 Z" fill="url(#xMetalDark)" stroke="none"/>
-                    <!-- X compass: front star (diagonal = X, larger, sharp points) -->
-                    <path class="logo-x" d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xMetal)" stroke="none"/>
-                    <!-- Specular highlight overlay -->
-                    <path class="logo-x" d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xShine)" stroke="none"/>
+                    <!-- X compass: back star (rotated 45° = cardinal, smaller) -->
+                    <path d="M20 6 L22 16 L32 18 L22 20 L20 30 L18 20 L8 18 L18 16 Z" fill="url(#xMetalDark)" stroke="#4A1570" stroke-width="0.3" stroke-linejoin="miter" transform="rotate(45 20 18)"/>
+                    <!-- X compass: front star (rotated 45° = X diagonal, larger) -->
+                    <path d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xMetal)" stroke="#6A1FA0" stroke-width="0.4" stroke-linejoin="miter" transform="rotate(45 20 18)"/>
+                    <!-- Specular highlight on front star -->
+                    <path d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xShine)" stroke="none" transform="rotate(45 20 18)"/>
                     <!-- Center rivet -->
-                    <circle class="logo-x" cx="20" cy="18" r="2" fill="url(#xMetal)" stroke="#5A1F8E" stroke-width="0.5"/>
+                    <circle cx="20" cy="18" r="1.8" fill="url(#xMetal)" stroke="#4A1570" stroke-width="0.6"/>
                 </svg>
             </a>
             <ul class="nav-links">
