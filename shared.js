@@ -153,3 +153,30 @@ function initNeonFlicker() {
 }
 
 document.addEventListener('DOMContentLoaded', initNeonFlicker);
+
+// ========== SKYLINE LIQUID WARP ==========
+function initSkylineWarp() {
+    const turb = document.getElementById('skyline-turbulence');
+    const turbMid = document.getElementById('skyline-turbulence-mid');
+    if (!turb) return;
+
+    let t = 0;
+    function animate() {
+        t += 0.003;
+        // Slowly oscillate the baseFrequency for a heat-mirage shimmer
+        const bx = 0.015 + Math.sin(t) * 0.005;
+        const by = 0.015 + Math.cos(t * 0.7) * 0.004;
+        turb.setAttribute('baseFrequency', bx.toFixed(4) + ' ' + by.toFixed(4));
+
+        if (turbMid) {
+            const mx = 0.012 + Math.sin(t * 0.6 + 1) * 0.004;
+            const my = 0.012 + Math.cos(t * 0.5 + 2) * 0.003;
+            turbMid.setAttribute('baseFrequency', mx.toFixed(4) + ' ' + my.toFixed(4));
+        }
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+document.addEventListener('DOMContentLoaded', initSkylineWarp);
