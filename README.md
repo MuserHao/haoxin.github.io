@@ -1,8 +1,8 @@
-# haoxin.github.io
+# muserhao.github.io
 
 Personal website and tech blog for Hao Xin -- Senior ML Scientist at Apple.
 
-**Live site:** [muserhao.github.io/haoxin.github.io](https://muserhao.github.io/haoxin.github.io/)
+**Live site:** [muserhao.github.io](https://muserhao.github.io/)
 
 ## What's here
 
