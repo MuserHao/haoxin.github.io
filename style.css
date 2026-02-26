@@ -70,50 +70,87 @@
 
 /* ========== LIGHT THEME ========== */
 [data-theme="light"] {
-    --neon-pink: #d1005e;
-    --neon-cyan: #0090aa;
-    --neon-purple: #8b1abf;
+    /* Vivid neon accents — same energy as dark mode */
+    --neon-pink: #ff006e;
+    --neon-cyan: #00c8d4;
+    --neon-purple: #a020f0;
     --neon-green: #1a9e00;
     --neon-yellow: #c5a200;
 
-    --bg-dark: #f0f0f5;
-    --bg-card: rgba(255, 255, 255, 0.9);
-    --bg-terminal: rgba(240, 240, 248, 0.98);
-    --bg-terminal-header: rgba(220, 220, 235, 0.95);
+    /* Warm cream backgrounds */
+    --bg-dark: #faf8f5;
+    --bg-card: rgba(255, 255, 252, 0.95);
+    --bg-terminal: rgba(248, 246, 240, 0.98);
+    --bg-terminal-header: rgba(235, 230, 220, 0.95);
 
-    --text-primary: #2a2a3a;
-    --text-secondary: #666;
-    --text-heading: #1a1a2e;
-    --text-faint: rgba(0, 0, 0, 0.15);
+    /* Dark navy text */
+    --text-primary: #1e1e2e;
+    --text-secondary: #555;
+    --text-heading: #0f0f1a;
+    --text-faint: rgba(0, 0, 0, 0.12);
 
-    --border-subtle: rgba(0, 100, 140, 0.12);
-    --border-hover: rgba(0, 100, 140, 0.3);
-    --cyan-glow-sm: rgba(0, 144, 170, 0.06);
-    --cyan-glow-md: rgba(0, 144, 170, 0.12);
-    --cyan-glow-lg: rgba(0, 144, 170, 0.2);
-    --cyan-glow-bg: rgba(0, 144, 170, 0.04);
-    --cyan-glow-fill: rgba(0, 144, 170, 0.06);
-    --cyan-glow-fill-hover: rgba(0, 144, 170, 0.1);
-    --cyan-text-glow: rgba(0, 144, 170, 0.3);
-    --pink-glow-sm: rgba(209, 0, 94, 0.06);
-    --pink-glow-md: rgba(209, 0, 94, 0.1);
-    --pink-glow-lg: rgba(209, 0, 94, 0.2);
-    --pink-text-glow: rgba(209, 0, 94, 0.3);
-    --pink-border: rgba(209, 0, 94, 0.2);
-    --purple-glow-sm: rgba(139, 26, 191, 0.06);
-    --purple-glow-md: rgba(139, 26, 191, 0.1);
-    --purple-glow-lg: rgba(139, 26, 191, 0.15);
-    --purple-text-glow: rgba(139, 26, 191, 0.3);
-    --purple-border: rgba(139, 26, 191, 0.15);
-    --purple-border-md: rgba(139, 26, 191, 0.25);
-    --green-text-glow: rgba(26, 158, 0, 0.3);
-    --grid-line: rgba(0, 100, 140, 0.04);
-    --nav-bg: rgba(240, 240, 245, 0.95);
-    --nav-mobile-bg: rgba(240, 240, 245, 0.98);
-    --shadow-dark: rgba(0, 0, 0, 0.08);
-    --bar-bg: rgba(0, 0, 0, 0.06);
+    /* Borders & glows — slightly higher alphas for vivid accents on light bg */
+    --border-subtle: rgba(0, 200, 212, 0.15);
+    --border-hover: rgba(0, 200, 212, 0.35);
+    --cyan-glow-sm: rgba(0, 200, 212, 0.08);
+    --cyan-glow-md: rgba(0, 200, 212, 0.15);
+    --cyan-glow-lg: rgba(0, 200, 212, 0.25);
+    --cyan-glow-bg: rgba(0, 200, 212, 0.05);
+    --cyan-glow-fill: rgba(0, 200, 212, 0.07);
+    --cyan-glow-fill-hover: rgba(0, 200, 212, 0.12);
+    --cyan-text-glow: rgba(0, 200, 212, 0.35);
+    --pink-glow-sm: rgba(255, 0, 110, 0.07);
+    --pink-glow-md: rgba(255, 0, 110, 0.12);
+    --pink-glow-lg: rgba(255, 0, 110, 0.25);
+    --pink-text-glow: rgba(255, 0, 110, 0.35);
+    --pink-border: rgba(255, 0, 110, 0.2);
+    --purple-glow-sm: rgba(160, 32, 240, 0.07);
+    --purple-glow-md: rgba(160, 32, 240, 0.12);
+    --purple-glow-lg: rgba(160, 32, 240, 0.2);
+    --purple-text-glow: rgba(160, 32, 240, 0.35);
+    --purple-border: rgba(160, 32, 240, 0.18);
+    --purple-border-md: rgba(160, 32, 240, 0.28);
+    --green-text-glow: rgba(26, 158, 0, 0.35);
+    --grid-line: rgba(200, 180, 150, 0.06);
+    --nav-bg: rgba(250, 248, 245, 0.95);
+    --nav-mobile-bg: rgba(250, 248, 245, 0.98);
+    --shadow-dark: rgba(0, 0, 0, 0.06);
+    --bar-bg: rgba(0, 0, 0, 0.05);
 
     --cursor-blend: multiply;
+}
+
+/* ========== LIGHT THEME OVERRIDES ========== */
+[data-theme="light"] .neon-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 200, 212, 0.15), 0 2px 40px rgba(160, 32, 240, 0.08);
+}
+
+[data-theme="light"] .terminal-window {
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+[data-theme="light"] .neon-btn:hover {
+    box-shadow: 0 4px 18px rgba(0, 200, 212, 0.25);
+}
+
+[data-theme="light"] .neon-btn.alt:hover {
+    box-shadow: 0 4px 18px rgba(255, 0, 110, 0.25);
+}
+
+[data-theme="light"] .glitch {
+    text-shadow: 0 0 10px rgba(0, 200, 212, 0.2);
+}
+
+[data-theme="light"] .logo {
+    text-shadow: 0 0 8px rgba(0, 200, 212, 0.2);
+}
+
+[data-theme="light"] .hero-content::before {
+    opacity: 0.4;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+    background: #faf8f5;
 }
 
 /* Smooth transitions on theme switch */
@@ -1268,6 +1305,153 @@ footer {
     to { --gradient-angle: 360deg; }
 }
 
+/* ========== HERO NEON DECORATIONS ========== */
+.hero-neon-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.hero-content {
+    z-index: 1;
+}
+
+/* Floating kanji */
+.neon-kanji {
+    position: absolute;
+    font-family: 'Noto Sans JP', 'Orbitron', sans-serif;
+    font-weight: 700;
+    opacity: 0.12;
+    text-shadow: 0 0 12px currentColor, 0 0 30px currentColor;
+    transform: rotate(var(--base-rotate, 0deg));
+    animation: neon-kanji-float 6s ease-in-out infinite;
+    user-select: none;
+}
+
+@keyframes neon-kanji-float {
+    0%, 100% {
+        transform: rotate(var(--base-rotate, 0deg)) translateY(0);
+    }
+    50% {
+        transform: rotate(var(--base-rotate, 0deg)) translateY(-12px);
+    }
+}
+
+/* Neon sign boxes */
+.neon-sign-box {
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    padding: 0.5rem 1rem;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    animation: neon-sign-pulse 3s ease-in-out infinite;
+}
+
+.neon-sign-pink {
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px var(--neon-pink), 0 0 20px var(--neon-pink);
+    box-shadow: 0 0 8px var(--pink-glow-md), 0 0 20px var(--pink-glow-sm), inset 0 0 8px var(--pink-glow-sm);
+    opacity: 0.7;
+}
+
+.neon-sign-cyan {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+    box-shadow: 0 0 8px var(--cyan-glow-md), 0 0 20px var(--cyan-glow-sm), inset 0 0 8px var(--cyan-glow-sm);
+    opacity: 0.7;
+    animation-delay: 1.5s;
+}
+
+@keyframes neon-sign-pulse {
+    0%, 100% { opacity: 0.7; filter: brightness(1); }
+    50% { opacity: 0.9; filter: brightness(1.3); }
+}
+
+/* Vertical neon light strips */
+.neon-strip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+    background-size: 100% 300%;
+    opacity: 0.25;
+    box-shadow: 0 0 6px var(--neon-cyan), 0 0 15px var(--neon-pink);
+}
+
+.neon-strip-left {
+    left: 0;
+    animation: neon-strip-cycle 8s linear infinite;
+}
+
+.neon-strip-right {
+    right: 0;
+    animation: neon-strip-cycle 8s linear infinite reverse;
+}
+
+@keyframes neon-strip-cycle {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 300%; }
+}
+
+/* Neon horizon line */
+.neon-horizon {
+    position: absolute;
+    bottom: 80px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan), transparent);
+    opacity: 0.3;
+    animation: neon-horizon-pulse 4s ease-in-out infinite;
+}
+
+.neon-horizon::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5%;
+    right: 5%;
+    height: 20px;
+    background: linear-gradient(180deg, var(--cyan-glow-md), transparent);
+    opacity: 0.5;
+    filter: blur(4px);
+}
+
+@keyframes neon-horizon-pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+}
+
+/* ---- Light theme adjustments for decorations ---- */
+[data-theme="light"] .neon-kanji {
+    opacity: 0.10;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .neon-sign-box {
+    opacity: 0.5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .neon-strip {
+    opacity: 0.15;
+    box-shadow: none;
+}
+
+[data-theme="light"] .neon-horizon {
+    opacity: 0.2;
+}
+
+[data-theme="light"] .neon-horizon::after {
+    opacity: 0.3;
+}
+
 /* ========== CLICK RIPPLE ========== */
 .ripple {
     position: absolute;
@@ -1310,6 +1494,20 @@ footer {
 }
 
 @media (max-width: 768px) {
+    /* Hide kanji and sign boxes on mobile — too cluttered */
+    .neon-kanji,
+    .neon-sign-box {
+        display: none;
+    }
+
+    .neon-strip {
+        opacity: 0.15;
+    }
+
+    .neon-horizon::after {
+        display: none;
+    }
+
     .nav-links {
         display: none;
         position: fixed;

@@ -124,3 +124,32 @@ document.addEventListener('click', (e) => {
     btn.appendChild(ripple);
     ripple.addEventListener('animationend', () => ripple.remove());
 });
+
+// ========== NEON FLICKER ==========
+function initNeonFlicker() {
+    const els = document.querySelectorAll('.neon-kanji, .neon-sign-box');
+    if (!els.length) return;
+
+    els.forEach(el => {
+        function scheduleFlicker() {
+            const delay = 2000 + Math.random() * 6000;
+            setTimeout(() => {
+                // Quick double-blink mimicking neon tube flutter
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.style.opacity = '';
+                    setTimeout(() => {
+                        el.style.opacity = '0';
+                        setTimeout(() => {
+                            el.style.opacity = '';
+                            scheduleFlicker();
+                        }, 80);
+                    }, 100);
+                }, 60);
+            }, delay);
+        }
+        scheduleFlicker();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initNeonFlicker);
