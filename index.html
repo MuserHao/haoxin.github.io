@@ -47,17 +47,20 @@
             <div class="logo" aria-label="HAO.XIN">
                 <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <!-- Gem facet: bright face (light catching) -->
-                        <linearGradient id="facetLight" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#FFF8E1"/>
+                        <!-- Polished metal: bright face with specular highlight -->
+                        <linearGradient id="gemLight" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFDE8"/>
+                            <stop offset="15%" stop-color="#FFF4B8"/>
                             <stop offset="40%" stop-color="#E8C84A"/>
-                            <stop offset="100%" stop-color="#A67C00"/>
+                            <stop offset="70%" stop-color="#C49A30"/>
+                            <stop offset="100%" stop-color="#8B7020"/>
                         </linearGradient>
-                        <!-- Gem facet: shadow face -->
-                        <linearGradient id="facetDark" x1="100%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#A67C00"/>
-                            <stop offset="50%" stop-color="#7A5A00"/>
-                            <stop offset="100%" stop-color="#4A3500"/>
+                        <!-- Polished metal: shadow face with depth -->
+                        <linearGradient id="gemDark" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#B8922E"/>
+                            <stop offset="30%" stop-color="#8B6B1A"/>
+                            <stop offset="60%" stop-color="#5C4510"/>
+                            <stop offset="100%" stop-color="#3A2A08"/>
                         </linearGradient>
                     </defs>
                     <!-- Broken circle: 3 arcs with kintsugi gaps -->
@@ -67,19 +70,19 @@
                     <!-- H: triangle pointing up + crossbar -->
                     <path d="M8 33 L20 5 L32 33" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
                     <line x1="12" y1="23" x2="28" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <!-- X: 4-pointed gem-cut star, each arm = 2 facets -->
-                    <!-- Top-left arm -->
-                    <polygon points="20,18 17,15 5,3" fill="url(#facetLight)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <polygon points="20,18 15,17 5,3" fill="url(#facetDark)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <!-- Top-right arm -->
-                    <polygon points="20,18 23,15 35,3" fill="url(#facetDark)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <polygon points="20,18 25,17 35,3" fill="url(#facetLight)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <!-- Bottom-right arm -->
-                    <polygon points="20,18 23,21 35,33" fill="url(#facetLight)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <polygon points="20,18 25,19 35,33" fill="url(#facetDark)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <!-- Bottom-left arm -->
-                    <polygon points="20,18 17,21 5,33" fill="url(#facetDark)" stroke="#7A5A00" stroke-width="0.3"/>
-                    <polygon points="20,18 15,19 5,33" fill="url(#facetLight)" stroke="#7A5A00" stroke-width="0.3"/>
+                    <!-- X: 4 kite-shaped arms, each split into 2 equal facets along ridge -->
+                    <!-- Top-left arm: tip(4,4) left-edge(14,14) center(20,18) right-edge(10,18) -->
+                    <polygon points="4,4 14,14 20,18" fill="url(#gemLight)" stroke="#6B5010" stroke-width="0.4"/>
+                    <polygon points="4,4 10,18 20,18" fill="url(#gemDark)" stroke="#6B5010" stroke-width="0.4"/>
+                    <!-- Top-right arm: tip(36,4) left-edge(30,18) center(20,18) right-edge(26,14) -->
+                    <polygon points="36,4 26,14 20,18" fill="url(#gemDark)" stroke="#6B5010" stroke-width="0.4"/>
+                    <polygon points="36,4 30,18 20,18" fill="url(#gemLight)" stroke="#6B5010" stroke-width="0.4"/>
+                    <!-- Bottom-right arm: tip(36,32) left-edge(26,22) center(20,18) right-edge(30,18) -->
+                    <polygon points="36,32 26,22 20,18" fill="url(#gemLight)" stroke="#6B5010" stroke-width="0.4"/>
+                    <polygon points="36,32 30,18 20,18" fill="url(#gemDark)" stroke="#6B5010" stroke-width="0.4"/>
+                    <!-- Bottom-left arm: tip(4,32) left-edge(10,18) center(20,18) right-edge(14,22) -->
+                    <polygon points="4,32 14,22 20,18" fill="url(#gemDark)" stroke="#6B5010" stroke-width="0.4"/>
+                    <polygon points="4,32 10,18 20,18" fill="url(#gemLight)" stroke="#6B5010" stroke-width="0.4"/>
                 </svg>
             </div>
             <ul class="nav-links">
