@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | Hao Xin</title>
+    <meta name="description" content="Page not found.">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+        (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t)})();
+    </script>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="gradient-orbs" aria-hidden="true">
+        <div class="orb orb-cyan"></div>
+        <div class="orb orb-pink"></div>
+        <div class="orb orb-purple"></div>
+    </div>
+
+    <div id="particles"></div>
+
+    <header>
+        <nav>
+            <a href="index.html" class="logo" aria-label="HAO.XIN">
+                <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="d1a" x1="100%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#C8A840"/>
+                            <stop offset="28%" stop-color="#E8D888"/>
+                            <stop offset="55%" stop-color="#F8F0C8"/>
+                            <stop offset="100%" stop-color="#C8A840"/>
+                        </linearGradient>
+                        <linearGradient id="d2a" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#C0A038"/>
+                            <stop offset="28%" stop-color="#E0D080"/>
+                            <stop offset="56%" stop-color="#F8F0C8"/>
+                            <stop offset="100%" stop-color="#C0A038"/>
+                        </linearGradient>
+                        <linearGradient id="d3a" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#C8A840"/>
+                            <stop offset="36%" stop-color="#E8D888"/>
+                            <stop offset="62%" stop-color="#F8F0C8"/>
+                            <stop offset="100%" stop-color="#C0A038"/>
+                        </linearGradient>
+                        <linearGradient id="d4a" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#C0A038"/>
+                            <stop offset="38%" stop-color="#E0D080"/>
+                            <stop offset="64%" stop-color="#F8F0C8"/>
+                            <stop offset="100%" stop-color="#C8A840"/>
+                        </linearGradient>
+                        <linearGradient id="dHub" x1="50%" y1="100%" x2="50%" y2="0%">
+                            <stop offset="0%" stop-color="#907828"/>
+                            <stop offset="50%" stop-color="#C8A840"/>
+                            <stop offset="100%" stop-color="#E8D888"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M24.14 35.45 A16 16 0 0 1 4.97 14.53" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M7.75 9.72 A16 16 0 0 1 32.25 9.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M35.03 14.53 A16 16 0 0 1 29.18 33.10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="11" y1="32" x2="18.5" y2="8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    <line x1="21.5" y1="8" x2="29" y2="32" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    <line x1="14" y1="23" x2="26" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <polygon points="4,4 17,18 20,14" fill="url(#d1a)" stroke="#806020" stroke-width="0.3"/>
+                    <polygon points="36,4 20,14 23,18" fill="url(#d2a)" stroke="#806020" stroke-width="0.3"/>
+                    <polygon points="36,32 23,18 20,20" fill="url(#d3a)" stroke="#806020" stroke-width="0.3"/>
+                    <polygon points="4,32 20,20 17,18" fill="url(#d4a)" stroke="#806020" stroke-width="0.3"/>
+                    <polygon points="20,14 23,18 20,20 17,18" fill="url(#dHub)" stroke="#806020" stroke-width="0.3"/>
+                </svg>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">HOME</a></li>
+                <li><a href="blog/index.html" class="nav-link">BLOG</a></li>
+                <li>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-toggle-icon-light">&#9728;</span>
+                        <span class="theme-toggle-slider"></span>
+                        <span class="theme-toggle-icon-dark">&#9790;</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="display:flex; align-items:center; justify-content:center; min-height:60vh; text-align:center; padding:2rem;">
+        <div>
+            <h1 style="font-family:var(--font-display); font-size:6rem; color:var(--neon-cyan); margin-bottom:0.5rem; text-shadow:0 0 30px var(--cyan-text-glow);">404</h1>
+            <p style="font-family:var(--font-mono); font-size:1.2rem; color:var(--text-secondary); margin-bottom:2rem;">// page_not_found -- the path you seek does not exist</p>
+            <a href="index.html" style="font-family:var(--font-mono); color:var(--neon-cyan); text-decoration:none; border:1px solid var(--neon-cyan); padding:0.8rem 2rem; border-radius:4px; transition:all 0.3s ease;">
+                <i class="fas fa-arrow-left"></i> RETURN HOME
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">// built with caffeine and mass GPU hours</p>
+            <p class="footer-copy">&copy; 2026 Hao Xin. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="shared.js"></script>
+    <script>
+        createParticles(30);
+    </script>
+</body>
+</html>
