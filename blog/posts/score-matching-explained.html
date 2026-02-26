@@ -54,10 +54,27 @@
             <a href="../../index.html" class="logo" aria-label="HAO.XIN">
                 <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="xGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="var(--neon-purple)"/>
-                            <stop offset="100%" stop-color="var(--neon-yellow)"/>
+                        <!-- Metallic gradient: purple → gold highlight → purple -->
+                        <linearGradient id="xMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#7B2FBE"/>
+                            <stop offset="35%" stop-color="#D4A843"/>
+                            <stop offset="50%" stop-color="#FFF1B8"/>
+                            <stop offset="65%" stop-color="#D4A843"/>
+                            <stop offset="100%" stop-color="#7B2FBE"/>
                         </linearGradient>
+                        <!-- Darker metallic for back star -->
+                        <linearGradient id="xMetalDark" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#5A1F8E"/>
+                            <stop offset="40%" stop-color="#9E7A2E"/>
+                            <stop offset="50%" stop-color="#C9A84E"/>
+                            <stop offset="60%" stop-color="#9E7A2E"/>
+                            <stop offset="100%" stop-color="#5A1F8E"/>
+                        </linearGradient>
+                        <!-- Specular highlight -->
+                        <radialGradient id="xShine" cx="35%" cy="30%" r="50%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.5)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </radialGradient>
                     </defs>
                     <!-- Broken circle: 3 arcs with kintsugi gaps -->
                     <path d="M24.14 35.45 A16 16 0 0 1 4.97 14.53" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -66,8 +83,14 @@
                     <!-- H: triangle pointing up (vanishing-point perspective) + crossbar -->
                     <path d="M8 33 L20 5 L32 33" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
                     <line x1="12" y1="23" x2="28" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <!-- X: 4-pointed compass star rotated 45° (Gemini-style curves, purple→gold gradient) -->
-                    <path class="logo-x" d="M20 2 C20 14 23 17 36 18 C23 19 20 22 20 34 C20 22 17 19 4 18 C17 17 20 14 20 2 Z" fill="url(#xGrad)" stroke="url(#xGrad)" stroke-width="0.5" stroke-linejoin="round" transform="rotate(45 20 18)"/>
+                    <!-- X compass: back star (cardinal directions, smaller) -->
+                    <path class="logo-x" d="M20 5 L22 16 L33 18 L22 20 L20 31 L18 20 L7 18 L18 16 Z" fill="url(#xMetalDark)" stroke="none"/>
+                    <!-- X compass: front star (diagonal = X, larger, sharp points) -->
+                    <path class="logo-x" d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xMetal)" stroke="none"/>
+                    <!-- Specular highlight overlay -->
+                    <path class="logo-x" d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xShine)" stroke="none"/>
+                    <!-- Center rivet -->
+                    <circle class="logo-x" cx="20" cy="18" r="2" fill="url(#xMetal)" stroke="#5A1F8E" stroke-width="0.5"/>
                 </svg>
             </a>
             <ul class="nav-links">

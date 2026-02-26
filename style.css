@@ -303,13 +303,12 @@ nav {
 }
 
 .logo-x {
-    filter: drop-shadow(0 0 6px var(--neon-purple)) drop-shadow(0 0 12px var(--purple-text-glow))
-            drop-shadow(0 0 4px var(--neon-yellow));
+    filter: drop-shadow(0 0 5px rgba(212,168,67,0.6)) drop-shadow(0 0 10px rgba(123,47,190,0.5));
 }
 
 .logo:hover .logo-mark {
     filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--cyan-glow-lg))
-            drop-shadow(0 0 14px var(--neon-purple)) drop-shadow(0 0 10px var(--neon-yellow));
+            drop-shadow(0 0 12px rgba(212,168,67,0.7)) drop-shadow(0 0 16px rgba(123,47,190,0.6));
     transform: scale(1.08);
 }
 
