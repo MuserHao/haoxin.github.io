@@ -47,27 +47,27 @@
             <div class="logo" aria-label="HAO.XIN">
                 <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <!-- Metallic gem gradient: purple → gold highlight → purple -->
-                        <linearGradient id="xMetal" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#6A1FA0"/>
-                            <stop offset="30%" stop-color="#C49A38"/>
-                            <stop offset="45%" stop-color="#F5E6A3"/>
-                            <stop offset="55%" stop-color="#C49A38"/>
+                        <!-- Facet gradients for gem-cut effect -->
+                        <linearGradient id="facetA" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#F5E6A3"/>
+                            <stop offset="50%" stop-color="#C49A38"/>
                             <stop offset="100%" stop-color="#6A1FA0"/>
                         </linearGradient>
-                        <!-- Darker facet for back star -->
-                        <linearGradient id="xMetalDark" x1="100%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#4A1570"/>
-                            <stop offset="35%" stop-color="#8B6B20"/>
-                            <stop offset="50%" stop-color="#A8893A"/>
-                            <stop offset="65%" stop-color="#8B6B20"/>
+                        <linearGradient id="facetB" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#6A1FA0"/>
+                            <stop offset="50%" stop-color="#8B6B20"/>
                             <stop offset="100%" stop-color="#4A1570"/>
                         </linearGradient>
-                        <!-- Specular highlight -->
-                        <radialGradient id="xShine" cx="38%" cy="28%" r="40%">
-                            <stop offset="0%" stop-color="rgba(255,255,255,0.45)"/>
-                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-                        </radialGradient>
+                        <linearGradient id="facetC" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#4A1570"/>
+                            <stop offset="40%" stop-color="#C49A38"/>
+                            <stop offset="100%" stop-color="#F5E6A3"/>
+                        </linearGradient>
+                        <linearGradient id="facetD" x1="50%" y1="0%" x2="50%" y2="100%">
+                            <stop offset="0%" stop-color="#D4AF50"/>
+                            <stop offset="50%" stop-color="#8B6B20"/>
+                            <stop offset="100%" stop-color="#5A1880"/>
+                        </linearGradient>
                     </defs>
                     <!-- Broken circle: 3 arcs with kintsugi gaps -->
                     <path d="M24.14 35.45 A16 16 0 0 1 4.97 14.53" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -76,14 +76,33 @@
                     <!-- H: triangle pointing up (vanishing-point perspective) + crossbar -->
                     <path d="M8 33 L20 5 L32 33" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
                     <line x1="12" y1="23" x2="28" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <!-- X compass: back star (rotated 45° = cardinal, smaller) -->
-                    <path d="M20 6 L22 16 L32 18 L22 20 L20 30 L18 20 L8 18 L18 16 Z" fill="url(#xMetalDark)" stroke="#4A1570" stroke-width="0.3" stroke-linejoin="miter" transform="rotate(45 20 18)"/>
-                    <!-- X compass: front star (rotated 45° = X diagonal, larger) -->
-                    <path d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xMetal)" stroke="#6A1FA0" stroke-width="0.4" stroke-linejoin="miter" transform="rotate(45 20 18)"/>
-                    <!-- Specular highlight on front star -->
-                    <path d="M20 2 L22.5 15.5 L36 18 L22.5 20.5 L20 34 L17.5 20.5 L4 18 L17.5 15.5 Z" fill="url(#xShine)" stroke="none" transform="rotate(45 20 18)"/>
-                    <!-- Center rivet -->
-                    <circle cx="20" cy="18" r="1.8" fill="url(#xMetal)" stroke="#4A1570" stroke-width="0.6"/>
+                    <!-- X gem-cut compass: 8 points, each split into 2 facets (16 triangles) -->
+                    <g transform="rotate(45 20 18)">
+                        <!-- N point (top) -->
+                        <polygon points="20,18 18,16 20,2" fill="url(#facetA)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 22,16 20,2" fill="url(#facetB)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- NE point -->
+                        <polygon points="20,18 22,16 32,12" fill="url(#facetC)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 24,18 32,12" fill="url(#facetD)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- E point (right) -->
+                        <polygon points="20,18 24,18 36,18" fill="url(#facetA)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 22,20 36,18" fill="url(#facetB)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- SE point -->
+                        <polygon points="20,18 22,20 32,24" fill="url(#facetC)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 20,22 32,24" fill="url(#facetD)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- S point (bottom) -->
+                        <polygon points="20,18 20,22 20,34" fill="url(#facetA)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 18,20 20,34" fill="url(#facetB)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- SW point -->
+                        <polygon points="20,18 18,20 8,24" fill="url(#facetC)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 16,18 8,24" fill="url(#facetD)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- W point (left) -->
+                        <polygon points="20,18 16,18 4,18" fill="url(#facetA)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 18,16 4,18" fill="url(#facetB)" stroke="#4A1570" stroke-width="0.3"/>
+                        <!-- NW point -->
+                        <polygon points="20,18 18,16 8,12" fill="url(#facetC)" stroke="#4A1570" stroke-width="0.3"/>
+                        <polygon points="20,18 16,18 8,12" fill="url(#facetD)" stroke="#4A1570" stroke-width="0.3"/>
+                    </g>
                 </svg>
             </div>
             <ul class="nav-links">
