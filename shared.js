@@ -125,58 +125,40 @@ document.addEventListener('click', (e) => {
     ripple.addEventListener('animationend', () => ripple.remove());
 });
 
-// ========== NEON FLICKER ==========
-function initNeonFlicker() {
+// ========== KANJI PULSE ==========
+function initKanjiPulse() {
     const els = document.querySelectorAll('.neon-kanji');
     if (!els.length) return;
 
-    els.forEach(el => {
-        function scheduleFlicker() {
-            const delay = 2000 + Math.random() * 6000;
-            setTimeout(() => {
-                // Quick double-blink mimicking neon tube flutter
-                el.style.opacity = '0';
-                setTimeout(() => {
-                    el.style.opacity = '';
-                    setTimeout(() => {
-                        el.style.opacity = '0';
-                        setTimeout(() => {
-                            el.style.opacity = '';
-                            scheduleFlicker();
-                        }, 80);
-                    }, 100);
-                }, 60);
-            }, delay);
-        }
-        scheduleFlicker();
-    });
-}
-
-document.addEventListener('DOMContentLoaded', initNeonFlicker);
-
-// ========== SKYLINE LIQUID WARP ==========
-function initSkylineWarp() {
-    const turb = document.getElementById('skyline-turbulence');
-    const turbMid = document.getElementById('skyline-turbulence-mid');
-    if (!turb) return;
-
     let t = 0;
     function animate() {
-        t += 0.003;
-        // Slowly oscillate the baseFrequency for a heat-mirage shimmer
-        const bx = 0.015 + Math.sin(t) * 0.005;
-        const by = 0.015 + Math.cos(t * 0.7) * 0.004;
-        turb.setAttribute('baseFrequency', bx.toFixed(4) + ' ' + by.toFixed(4));
-
-        if (turbMid) {
-            const mx = 0.012 + Math.sin(t * 0.6 + 1) * 0.004;
-            const my = 0.012 + Math.cos(t * 0.5 + 2) * 0.003;
-            turbMid.setAttribute('baseFrequency', mx.toFixed(4) + ' ' + my.toFixed(4));
-        }
-
+        t += 0.015;
+        els.forEach((el, i) => {
+            const phase = i * 1.3;
+            const opacity = 0.04 + 0.03 * Math.sin(t + phase);
+            el.style.opacity = opacity.toFixed(3);
+        });
         requestAnimationFrame(animate);
     }
     animate();
 }
 
-document.addEventListener('DOMContentLoaded', initSkylineWarp);
+document.addEventListener('DOMContentLoaded', initKanjiPulse);
+
+// ========== LIQUID FLOW ==========
+function initLiquidFlow() {
+    const turb = document.getElementById('liquid-turbulence');
+    if (!turb) return;
+
+    let t = 0;
+    function animate() {
+        t += 0.003;
+        const bx = 0.006 + Math.sin(t * 0.7) * 0.004;
+        const by = 0.009 + Math.cos(t * 0.5) * 0.005;
+        turb.setAttribute('baseFrequency', bx.toFixed(4) + ' ' + by.toFixed(4));
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+document.addEventListener('DOMContentLoaded', initLiquidFlow);
