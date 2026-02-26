@@ -127,7 +127,7 @@ document.addEventListener('click', (e) => {
 
 // ========== NEON FLICKER ==========
 function initNeonFlicker() {
-    const els = document.querySelectorAll('.neon-kanji, .neon-sign-box');
+    const els = document.querySelectorAll('.neon-kanji');
     if (!els.length) return;
 
     els.forEach(el => {
