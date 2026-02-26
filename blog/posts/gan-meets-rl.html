@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>When GANs Meet RL | Hao Xin</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../blog.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });"></script>
+    <script>
+        (function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t)})();
+    </script>
+</head>
+<body>
+    <!-- SVG liquid distortion filter -->
+    <svg class="svg-filters" aria-hidden="true" style="position:absolute;width:0;height:0;">
+        <defs>
+            <filter id="liquid-distort" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence id="liquid-turbulence" type="fractalNoise"
+                    baseFrequency="0.006 0.009" numOctaves="4" seed="3" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise"
+                    scale="50" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="grid-bg"></div>
+
+    <!-- Floating gradient orbs -->
+    <div class="gradient-orbs" aria-hidden="true">
+        <div class="orb orb-cyan"></div>
+        <div class="orb orb-pink"></div>
+        <div class="orb orb-purple"></div>
+        <div class="orb orb-gold"></div>
+        <div class="orb orb-teal"></div>
+    </div>
+
+    <div id="particles"></div>
+
+    <header>
+        <nav>
+            <a href="../../index.html" class="logo" aria-label="HAO.XIN">
+                <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="d1a" x1="100%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#C8A840"/>
+                            <stop offset="12%" stop-color="#D8C060"/>
+                            <stop offset="28%" stop-color="#E8D888"/>
+                            <stop offset="44%" stop-color="#F0E8B0"/>
+                            <stop offset="55%" stop-color="#F8F0C8"/>
+                            <stop offset="70%" stop-color="#E8D888"/>
+                            <stop offset="100%" stop-color="#C8A840"/>
+                        </linearGradient>
+                        <linearGradient id="d1b" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#C8A840"/>
+                            <stop offset="30%" stop-color="#B09030"/>
+                            <stop offset="65%" stop-color="#987828"/>
+                            <stop offset="100%" stop-color="#806020"/>
+                        </linearGradient>
+                        <linearGradient id="d1c" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#A08830"/>
+                            <stop offset="35%" stop-color="#887020"/>
+                            <stop offset="70%" stop-color="#706018"/>
+                            <stop offset="100%" stop-color="#605010"/>
+                        </linearGradient>
+                        <linearGradient id="d2a" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#C0A038"/>
+                            <stop offset="14%" stop-color="#D0B858"/>
+                            <stop offset="30%" stop-color="#E0D080"/>
+                            <stop offset="46%" stop-color="#EEE4A8"/>
+                            <stop offset="56%" stop-color="#F8F0C8"/>
+                            <stop offset="70%" stop-color="#E0D080"/>
+                            <stop offset="100%" stop-color="#C0A038"/>
+                        </linearGradient>
+                        <linearGradient id="d2b" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#D0B858"/>
+                            <stop offset="28%" stop-color="#B09030"/>
+                            <stop offset="60%" stop-color="#987828"/>
+                            <stop offset="100%" stop-color="#806020"/>
+                        </linearGradient>
+                        <linearGradient id="d2c" x1="100%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#A08830"/>
+                            <stop offset="30%" stop-color="#908028"/>
+                            <stop offset="65%" stop-color="#706018"/>
+                            <stop offset="100%" stop-color="#605010"/>
+                        </linearGradient>
+                        <linearGradient id="d3a" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#C8A840"/>
+                            <stop offset="18%" stop-color="#D8C060"/>
+                            <stop offset="36%" stop-color="#E8D888"/>
+                            <stop offset="52%" stop-color="#F0E8B0"/>
+                            <stop offset="62%" stop-color="#F8F0C8"/>
+                            <stop offset="76%" stop-color="#E0D080"/>
+                            <stop offset="100%" stop-color="#C0A038"/>
+                        </linearGradient>
+                        <linearGradient id="d3b" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#C8A840"/>
+                            <stop offset="25%" stop-color="#B09030"/>
+                            <stop offset="58%" stop-color="#987828"/>
+                            <stop offset="100%" stop-color="#806020"/>
+                        </linearGradient>
+                        <linearGradient id="d3c" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#A08830"/>
+                            <stop offset="32%" stop-color="#908028"/>
+                            <stop offset="68%" stop-color="#706018"/>
+                            <stop offset="100%" stop-color="#605010"/>
+                        </linearGradient>
+                        <linearGradient id="d4a" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#C0A038"/>
+                            <stop offset="20%" stop-color="#D0B858"/>
+                            <stop offset="38%" stop-color="#E0D080"/>
+                            <stop offset="54%" stop-color="#EEE4A8"/>
+                            <stop offset="64%" stop-color="#F8F0C8"/>
+                            <stop offset="78%" stop-color="#E8D888"/>
+                            <stop offset="100%" stop-color="#C8A840"/>
+                        </linearGradient>
+                        <linearGradient id="d4b" x1="100%" y1="100%" x2="0%" y2="0%">
+                            <stop offset="0%" stop-color="#D0B858"/>
+                            <stop offset="28%" stop-color="#B09030"/>
+                            <stop offset="62%" stop-color="#987828"/>
+                            <stop offset="100%" stop-color="#806020"/>
+                        </linearGradient>
+                        <linearGradient id="d4c" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#A08830"/>
+                            <stop offset="35%" stop-color="#908028"/>
+                            <stop offset="70%" stop-color="#706018"/>
+                            <stop offset="100%" stop-color="#605010"/>
+                        </linearGradient>
+                        <linearGradient id="dHub" x1="50%" y1="100%" x2="50%" y2="0%">
+                            <stop offset="0%" stop-color="#907828"/>
+                            <stop offset="25%" stop-color="#A89038"/>
+                            <stop offset="50%" stop-color="#C8A840"/>
+                            <stop offset="75%" stop-color="#D8C060"/>
+                            <stop offset="100%" stop-color="#E8D888"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M24.14 35.45 A16 16 0 0 1 4.97 14.53" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M7.75 9.72 A16 16 0 0 1 32.25 9.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M35.03 14.53 A16 16 0 0 1 29.18 33.10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="11" y1="32" x2="18.5" y2="8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    <line x1="21.5" y1="8" x2="29" y2="32" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                    <line x1="14" y1="23" x2="26" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <polygon points="4,4 17,18 20,14" fill="url(#d1a)" stroke="#806020" stroke-width="0.3" stroke-linejoin="miter"/>
+                    <polygon points="4,4 17,18 18.5,16" fill="url(#d1b)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="4,4 20,14 18.5,16" fill="url(#d1c)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="36,4 20,14 23,18" fill="url(#d2a)" stroke="#806020" stroke-width="0.3" stroke-linejoin="miter"/>
+                    <polygon points="36,4 23,18 21.5,16" fill="url(#d2b)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="36,4 20,14 21.5,16" fill="url(#d2c)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="36,32 23,18 20,20" fill="url(#d3a)" stroke="#806020" stroke-width="0.3" stroke-linejoin="miter"/>
+                    <polygon points="36,32 23,18 21.5,19" fill="url(#d3b)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="36,32 20,20 21.5,19" fill="url(#d3c)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="4,32 20,20 17,18" fill="url(#d4a)" stroke="#806020" stroke-width="0.3" stroke-linejoin="miter"/>
+                    <polygon points="4,32 20,20 18.5,19" fill="url(#d4b)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="4,32 17,18 18.5,19" fill="url(#d4c)" stroke="#806020" stroke-width="0.2" stroke-linejoin="miter"/>
+                    <polygon points="20,14 23,18 20,20 17,18" fill="url(#dHub)" stroke="#806020" stroke-width="0.3" stroke-linejoin="miter"/>
+                </svg>
+            </a>
+            <ul class="nav-links">
+                <li><a href="../../index.html" class="nav-link">HOME</a></li>
+                <li><a href="../index.html" class="nav-link active">BLOG</a></li>
+                <li><a href="../../index.html#contact" class="nav-link">CONTACT</a></li>
+                <li>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-toggle-icon-light">&#9728;</span>
+                        <span class="theme-toggle-slider"></span>
+                        <span class="theme-toggle-icon-dark">&#9790;</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="post-main">
+        <article>
+            <div class="post-header">
+                <div class="post-meta">
+                    <span class="blog-date"><i class="fas fa-clock"></i> Feb 26, 2026</span>
+                    <span class="read-time"><i class="fas fa-book-open"></i> 22 min read</span>
+                </div>
+                <div class="blog-tags" style="justify-content: center; margin-bottom: 1.5rem;">
+                    <span class="blog-tag">GAN</span>
+                    <span class="blog-tag">RL</span>
+                    <span class="blog-tag">MATH</span>
+                    <span class="blog-tag">LLM</span>
+                </div>
+                <h1 class="post-title">When GANs Meet RL: The Adversarial Game Behind Generative AI</h1>
+                <p class="post-subtitle">// two players, one game -- why your GAN and your RLHF pipeline are secretly the same thing</p>
+                <div class="post-divider"></div>
+            </div>
+
+            <div class="post-content">
+                <h2>01 // INTRODUCTION</h2>
+
+                <p>
+                    Generative Adversarial Networks (GANs) and Reinforcement Learning (RL) appear, at first glance, to
+                    inhabit different corners of machine learning. GANs generate images by playing a game between a
+                    generator and a discriminator. RL trains agents to maximize cumulative reward in an environment.
+                    Different problem statements, different communities, different conferences.
+                </p>
+
+                <p>
+                    But look closer and a striking structural parallel emerges. Both frameworks learn a
+                    <strong>generative process</strong> (generator / policy) by optimizing against an
+                    <strong>evaluative process</strong> (discriminator / reward). Both can be formalized as
+                    two-player games. And both suffer from eerily similar failure modes -- mode collapse in
+                    GANs mirrors reward hacking in RL.
+                </p>
+
+                <p>
+                    This connection isn't just an analogy. It's a mathematical equivalence that has been
+                    formalized by several independent lines of work <a href="#ref-2">[2]</a><a href="#ref-3">[3]</a><a href="#ref-4">[4]</a>,
+                    and it has become practically relevant now that the dominant paradigm for post-training
+                    large language models -- <strong>RLHF</strong> (Reinforcement Learning from Human Feedback)
+                    <a href="#ref-7">[7]</a> -- sits squarely at the intersection.
+                </p>
+
+                <p>
+                    In this post, we'll build the mathematical framework to see GANs and RL as instances
+                    of the same abstract game, trace the formal connections through game theory and
+                    f-divergence minimization, and examine how RLHF for LLMs completes the picture.
+                </p>
+
+                <blockquote>
+                    <p>"The generator is the actor, the discriminator is the critic. The rest is notation."</p>
+                </blockquote>
+
+                <h2>02 // THE GAN GAME</h2>
+
+                <p>
+                    Let's start with the GAN formulation <a href="#ref-1">[1]</a>. A GAN consists of two neural networks locked in a
+                    minimax game:
+                </p>
+
+                <p>
+                    <strong>Generator</strong> $G_\theta: \mathcal{Z} \to \mathcal{X}$ maps random noise
+                    $\mathbf{z} \sim p_z(\mathbf{z})$ to data-like samples $G_\theta(\mathbf{z})$.
+                </p>
+
+                <p>
+                    <strong>Discriminator</strong> $D_\phi: \mathcal{X} \to [0, 1]$ outputs the probability that
+                    an input came from the real data distribution $p_{\text{data}}$ rather than from $G_\theta$.
+                </p>
+
+                <h3>The Value Function</h3>
+
+                <p>
+                    The game is defined by the value function:
+                </p>
+
+                <div class="math-block">
+                    $$\min_\theta \max_\phi \; V(G_\theta, D_\phi) = \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}[\log D_\phi(\mathbf{x})] + \mathbb{E}_{\mathbf{z} \sim p_z}[\log(1 - D_\phi(G_\theta(\mathbf{z})))]$$
+                </div>
+
+                <p>
+                    The discriminator wants to maximize $V$ -- correctly classifying real samples as real
+                    ($D_\phi(\mathbf{x}) \to 1$) and generated samples as fake ($D_\phi(G_\theta(\mathbf{z})) \to 0$).
+                    The generator wants to minimize $V$ -- producing samples that the discriminator classifies as real.
+                </p>
+
+                <h3>Optimal Discriminator</h3>
+
+                <p>
+                    For a fixed generator $G_\theta$ inducing distribution $p_g$, the optimal discriminator is:
+                </p>
+
+                <div class="math-block">
+                    $$D^*(\mathbf{x}) = \frac{p_{\text{data}}(\mathbf{x})}{p_{\text{data}}(\mathbf{x}) + p_g(\mathbf{x})}$$
+                </div>
+
+                <p>
+                    Substituting $D^*$ back into $V$ yields the <strong>Jensen-Shannon divergence</strong>
+                    (up to constants):
+                </p>
+
+                <div class="math-block">
+                    $$V(G, D^*) = 2 \, D_{\text{JS}}(p_{\text{data}} \| p_g) - 2\log 2$$
+                </div>
+
+                <p>
+                    So training the generator against the optimal discriminator is equivalent to minimizing the
+                    JS-divergence between the generated and real distributions. At the Nash equilibrium,
+                    $p_g = p_{\text{data}}$ and $D^*(\mathbf{x}) = \frac{1}{2}$ everywhere -- the discriminator
+                    can no longer tell real from fake.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">THE MINIMAX THEOREM</div>
+                    <p>
+                        Von Neumann's minimax theorem guarantees that for convex-concave games,
+                        $\max_\phi \min_\theta V = \min_\theta \max_\phi V$.
+                        This means the order of optimization doesn't matter at convergence --
+                        the Nash equilibrium is well-defined. Goodfellow et al. <a href="#ref-1">[1]</a>
+                        proved convergence for the non-parametric case (infinite-capacity $G$ and $D$).
+                    </p>
+                </div>
+
+                <h2>03 // THE RL GAME</h2>
+
+                <p>
+                    Now let's set up the RL framework. A standard RL problem is defined by a
+                    <strong>Markov Decision Process</strong> (MDP): $(\mathcal{S}, \mathcal{A}, P, r, \gamma)$
+                    with states $\mathcal{S}$, actions $\mathcal{A}$, transition dynamics
+                    $P(s'|s,a)$, reward function $r(s,a)$, and discount factor $\gamma$.
+                </p>
+
+                <p>
+                    A <strong>policy</strong> $\pi_\theta(a|s)$ maps states to action distributions.
+                    The objective is to maximize expected cumulative reward:
+                </p>
+
+                <div class="math-block">
+                    $$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \gamma^t r(s_t, a_t)\right]$$
+                </div>
+
+                <p>
+                    where $\tau = (s_0, a_0, s_1, a_1, \ldots)$ is a trajectory sampled under $\pi_\theta$.
+                </p>
+
+                <h3>Policy Gradient</h3>
+
+                <p>
+                    The REINFORCE estimator <a href="#ref-12">[12]</a> gives us the gradient:
+                </p>
+
+                <div class="math-block">
+                    $$\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\left[\sum_{t=0}^{T} \nabla_\theta \log \pi_\theta(a_t|s_t) \cdot R_t\right]$$
+                </div>
+
+                <p>
+                    where $R_t = \sum_{t'=t}^{T} \gamma^{t'-t} r(s_{t'}, a_{t'})$ is the return from time $t$.
+                    In the actor-critic variant, we replace $R_t$ with a learned value function
+                    $Q_\phi(s_t, a_t)$ or advantage $A_\phi(s_t, a_t)$:
+                </p>
+
+                <div class="math-block">
+                    $$\nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta}\left[\nabla_\theta \log \pi_\theta(a|s) \cdot A_\phi(s, a)\right]$$
+                </div>
+
+                <p>
+                    Already we can see the structure: an <strong>actor</strong> (the policy $\pi_\theta$) and
+                    a <strong>critic</strong> (the value function $Q_\phi$), trained in tandem. The actor
+                    generates behavior; the critic evaluates it.
+                </p>
+
+                <h2>04 // THE EQUIVALENCE</h2>
+
+                <p>
+                    Pfau and Vinyals <a href="#ref-2">[2]</a> made the connection explicit: <em>a GAN is
+                    a single-step actor-critic RL problem</em>. Consider a degenerate MDP with one state,
+                    where the "action" is the generated sample $G_\theta(\mathbf{z})$ and the "reward" is
+                    derived from the discriminator's evaluation.
+                </p>
+
+                <h3>The Mapping</h3>
+
+                <p>The component-by-component correspondence is:</p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 1.5rem 0;">
+                    <tr style="border-bottom: 1px solid var(--text-secondary);">
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">GAN</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">RL (Actor-Critic)</th>
+                    </tr>
+                    <tr><td style="padding:0.5rem;">Generator $G_\theta$</td><td style="padding:0.5rem;">Actor / Policy $\pi_\theta$</td></tr>
+                    <tr><td style="padding:0.5rem;">Discriminator $D_\phi$</td><td style="padding:0.5rem;">Critic $Q_\phi$ / Reward $r_\phi$</td></tr>
+                    <tr><td style="padding:0.5rem;">Noise $\mathbf{z}$</td><td style="padding:0.5rem;">Initial state / randomness</td></tr>
+                    <tr><td style="padding:0.5rem;">Generated sample $G_\theta(\mathbf{z})$</td><td style="padding:0.5rem;">Action $a$</td></tr>
+                    <tr><td style="padding:0.5rem;">$\log D_\phi(G_\theta(\mathbf{z}))$</td><td style="padding:0.5rem;">Reward signal $r(a)$</td></tr>
+                    <tr><td style="padding:0.5rem;">Discriminator loss</td><td style="padding:0.5rem;">Bellman residual / TD error</td></tr>
+                    <tr><td style="padding:0.5rem;">Generator loss</td><td style="padding:0.5rem;">Policy gradient objective</td></tr>
+                </table>
+
+                <p>
+                    The generator's gradient, $\nabla_\theta \mathbb{E}_z[\log D_\phi(G_\theta(\mathbf{z}))]$,
+                    is precisely a <strong>policy gradient</strong> where the discriminator's log-output serves as
+                    the reward. The discriminator, in turn, is trained to be a better critic -- estimating how
+                    "real" each generated sample is, analogous to a value function learning to evaluate states.
+                </p>
+
+                <h3>Key Structural Difference</h3>
+
+                <p>
+                    The difference lies in where the reward comes from:
+                </p>
+
+                <p>
+                    In <strong>standard RL</strong>, the reward function $r(s, a)$ is given by the environment --
+                    it's fixed, external, and not learned. The agent optimizes against a static objective.
+                </p>
+
+                <p>
+                    In a <strong>GAN</strong>, the reward function (discriminator) is itself a learned model
+                    that co-evolves with the generator. The "environment" is adversarial -- the goalposts
+                    move during training. This makes GANs a <strong>simultaneous game</strong> rather than a
+                    standard optimization problem.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">FIXED vs. CO-TRAINED REWARDS</div>
+                    <p>
+                        This is the essential distinction: RL optimizes against a <em>fixed or designed</em>
+                        reward signal, while GANs build their reward <em>on the fly</em> through the
+                        discriminator's co-training. One plays against a static environment; the other
+                        plays against a moving target. Both are games, but with fundamentally different
+                        dynamics. As we'll see, RLHF sits somewhere in between.
+                    </p>
+                </div>
+
+                <h2>05 // THE GAME THEORY</h2>
+
+                <p>
+                    Both frameworks can be unified under the language of game theory. The abstract
+                    formulation is a <strong>two-player game</strong>:
+                </p>
+
+                <div class="math-block">
+                    $$\min_G \max_D \; \mathcal{F}(G, D)$$
+                </div>
+
+                <p>
+                    where $G$ is a generative process, $D$ is an evaluative process, and $\mathcal{F}$ is
+                    the game's value function. The specifics depend on the instantiation:
+                </p>
+
+                <h3>GAN Instantiation</h3>
+
+                <div class="math-block">
+                    $$\mathcal{F}_{\text{GAN}}(G, D) = \mathbb{E}_{p_{\text{data}}}[\log D(\mathbf{x})] + \mathbb{E}_{p_g}[\log(1 - D(\mathbf{x}))]$$
+                </div>
+
+                <p>
+                    This is a <strong>zero-sum game</strong>: the discriminator's gain is the generator's loss.
+                    Nash equilibrium: $p_g = p_{\text{data}}$, $D = \frac{1}{2}$.
+                </p>
+
+                <h3>IRL / GAIL Instantiation</h3>
+
+                <p>
+                    Finn et al. <a href="#ref-3">[3]</a> and Ho &amp; Ermon <a href="#ref-4">[4]</a> showed that
+                    Inverse RL and GANs share the same structure. In <strong>Generative Adversarial Imitation
+                    Learning</strong> (GAIL):
+                </p>
+
+                <div class="math-block">
+                    $$\mathcal{F}_{\text{GAIL}}(\pi, D) = \mathbb{E}_{\pi}[\log D(s, a)] + \mathbb{E}_{\pi_E}[\log(1 - D(s, a))] - \lambda H(\pi)$$
+                </div>
+
+                <p>
+                    where $\pi_E$ is the expert policy (analogous to real data) and $H(\pi)$ is a causal
+                    entropy regularizer. The discriminator $D(s, a)$ now operates on state-action pairs,
+                    and $-\log D(s, a)$ serves as the reward signal for policy gradient updates.
+                </p>
+
+                <p>
+                    The key insight from Finn et al.: <em>training a GAN is equivalent to performing inverse
+                    reinforcement learning on a single-step decision problem</em>, where expert demonstrations
+                    are the real data and the discriminator is the learned reward function.
+                </p>
+
+                <h3>Three-Way Equivalence</h3>
+
+                <p>
+                    This leads to a triangle of equivalences between three seemingly different problems:
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">THE EQUIVALENCE TRIANGLE</div>
+                    <p>
+                        <strong>GANs</strong> (learn to generate data indistinguishable from real) $\iff$
+                        <strong>Inverse RL</strong> (recover reward from demonstrations, then optimize policy) $\iff$
+                        <strong>Energy-Based Models</strong> (learn energy function $E(\mathbf{x})$, sample via MCMC).
+                        <br><br>
+                        The mapping: discriminator $\leftrightarrow$ reward function $\leftrightarrow$ energy function.
+                        Generator $\leftrightarrow$ policy $\leftrightarrow$ sampler.
+                    </p>
+                </div>
+
+                <h2>06 // F-DIVERGENCE FRAMEWORK</h2>
+
+                <p>
+                    The deepest mathematical thread connecting GANs and RL runs through
+                    <strong>f-divergence minimization</strong> and <strong>convex duality</strong>
+                    <a href="#ref-5">[5]</a>.
+                </p>
+
+                <h3>f-Divergences</h3>
+
+                <p>
+                    An f-divergence between distributions $p$ and $q$ is defined as:
+                </p>
+
+                <div class="math-block">
+                    $$D_f(p \| q) = \mathbb{E}_{q}\left[f\left(\frac{p(\mathbf{x})}{q(\mathbf{x})}\right)\right]$$
+                </div>
+
+                <p>
+                    where $f$ is a convex function with $f(1) = 0$. Different choices of $f$ yield familiar divergences:
+                </p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 1.5rem 0;">
+                    <tr style="border-bottom: 1px solid var(--text-secondary);">
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">$f(u)$</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">Divergence</th>
+                    </tr>
+                    <tr><td style="padding:0.5rem;">$u \log u$</td><td style="padding:0.5rem;">KL divergence</td></tr>
+                    <tr><td style="padding:0.5rem;">$-\log u$</td><td style="padding:0.5rem;">Reverse KL</td></tr>
+                    <tr><td style="padding:0.5rem;">$(u-1)^2$</td><td style="padding:0.5rem;">Pearson $\chi^2$</td></tr>
+                    <tr><td style="padding:0.5rem;">$u\log u - (u+1)\log\frac{u+1}{2}$</td><td style="padding:0.5rem;">Jensen-Shannon</td></tr>
+                </table>
+
+                <h3>Variational Lower Bound</h3>
+
+                <p>
+                    By the <strong>Fenchel conjugate</strong> (convex dual) of $f$, any f-divergence admits a
+                    variational representation <a href="#ref-5">[5]</a>:
+                </p>
+
+                <div class="math-block">
+                    $$D_f(p \| q) = \sup_T \left\{ \mathbb{E}_p[T(\mathbf{x})] - \mathbb{E}_q[f^*(T(\mathbf{x}))] \right\}$$
+                </div>
+
+                <p>
+                    where $f^*$ is the Fenchel conjugate of $f$, and $T: \mathcal{X} \to \mathbb{R}$ is an
+                    arbitrary function (parameterized by a neural network in practice). This is the
+                    <strong>f-GAN</strong> framework: the discriminator $T$ maximizes this bound, the
+                    generator minimizes the divergence.
+                </p>
+
+                <p>
+                    Now here's the connection to RL. In <strong>Maximum Entropy Inverse RL</strong>
+                    <a href="#ref-13">[13]</a>, the objective for recovering a reward function from expert
+                    demonstrations is:
+                </p>
+
+                <div class="math-block">
+                    $$\max_r \left\{ \mathbb{E}_{\pi_E}[r(\tau)] - \log Z(r) \right\}$$
+                </div>
+
+                <p>
+                    where $Z(r) = \int \exp(r(\tau)) d\tau$ is the partition function. Compare this with the
+                    f-divergence variational bound. Setting $T = r$ and $f^*(T) = \log Z(r)$, the IRL objective
+                    is a special case of f-divergence estimation -- specifically, it corresponds to the
+                    <strong>reverse KL divergence</strong> between the occupancy measures of the expert and
+                    learned policies.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">THE UNIFYING PRINCIPLE</div>
+                    <p>
+                        Both GANs and (inverse) RL are variational f-divergence minimization problems.
+                        The discriminator/reward function is the variational function $T$ that tightens
+                        the bound. The generator/policy is the distribution $q$ being optimized. The real
+                        data/expert demonstrations are the reference distribution $p$. The only difference
+                        is the choice of $f$ and whether generation is one-shot or sequential.
+                    </p>
+                </div>
+
+                <h2>07 // RLHF: THE BRIDGE</h2>
+
+                <p>
+                    With this framework in place, we can now examine
+                    <strong>Reinforcement Learning from Human Feedback</strong> <a href="#ref-7">[7]</a>,
+                    the dominant paradigm for post-training large language models. RLHF sits precisely at
+                    the intersection of GANs and RL, borrowing structural elements from both.
+                </p>
+
+                <h3>The Three-Phase Pipeline</h3>
+
+                <p>
+                    <strong>Phase 1: Supervised Fine-Tuning (SFT).</strong> A pretrained LLM is fine-tuned on
+                    demonstration data to produce a reference policy $\pi_{\text{ref}}$.
+                </p>
+
+                <p>
+                    <strong>Phase 2: Reward Model Training.</strong> A reward model $R_\phi(x, y)$ is trained
+                    on human pairwise comparisons using the Bradley-Terry model:
+                </p>
+
+                <div class="math-block">
+                    $$\mathcal{L}(\phi) = -\mathbb{E}_{(x, y_w, y_l)}\left[\log \sigma\!\left(R_\phi(x, y_w) - R_\phi(x, y_l)\right)\right]$$
+                </div>
+
+                <p>
+                    where $y_w \succ y_l$ indicates that response $y_w$ was preferred over $y_l$ for prompt $x$.
+                </p>
+
+                <p>
+                    <strong>Phase 3: RL Fine-Tuning (PPO).</strong> The policy $\pi_\theta$ is optimized to
+                    maximize reward while staying close to the reference:
+                </p>
+
+                <div class="math-block">
+                    $$\max_\theta \; \mathbb{E}_{x \sim \mathcal{D},\, y \sim \pi_\theta(\cdot|x)}\left[R_\phi(x, y)\right] - \beta \, D_{\text{KL}}\!\left(\pi_\theta \| \pi_{\text{ref}}\right)$$
+                </div>
+
+                <p>
+                    The hyperparameter $\beta$ controls the strength of the KL penalty.
+                </p>
+
+                <h3>RLHF as a GAN</h3>
+
+                <p>
+                    The structural parallel to GANs is immediate:
+                </p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 1.5rem 0;">
+                    <tr style="border-bottom: 1px solid var(--text-secondary);">
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">GAN</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">RLHF</th>
+                    </tr>
+                    <tr><td style="padding:0.5rem;">Generator $G_\theta$</td><td style="padding:0.5rem;">LLM policy $\pi_\theta$</td></tr>
+                    <tr><td style="padding:0.5rem;">Discriminator $D_\phi$</td><td style="padding:0.5rem;">Reward model $R_\phi$</td></tr>
+                    <tr><td style="padding:0.5rem;">Real data $\mathbf{x} \sim p_{\text{data}}$</td><td style="padding:0.5rem;">Human-preferred responses $y_w$</td></tr>
+                    <tr><td style="padding:0.5rem;">Generated data $G(\mathbf{z})$</td><td style="padding:0.5rem;">Model responses $y \sim \pi_\theta$</td></tr>
+                    <tr><td style="padding:0.5rem;">$\min_\theta \max_\phi V(G, D)$</td><td style="padding:0.5rem;">$\max_\phi \mathcal{L}(\phi)$; then $\max_\theta J(\theta)$</td></tr>
+                    <tr><td style="padding:0.5rem;">Gradient penalty / spectral norm</td><td style="padding:0.5rem;">KL penalty $\beta \, D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})$</td></tr>
+                </table>
+
+                <p>
+                    But there is a crucial structural difference: in vanilla RLHF, the reward model is
+                    <strong>frozen</strong> after Phase 2. The generator (LLM) optimizes against a static
+                    evaluator. In contrast, GANs co-train the discriminator and generator simultaneously.
+                </p>
+
+                <p>
+                    In game-theoretic terms, vanilla RLHF is a <strong>Stackelberg game</strong>
+                    (leader-follower: the reward model commits first, the policy best-responds) rather than
+                    a <strong>Nash game</strong> (simultaneous moves, as in GANs).
+                </p>
+
+                <h3>The KL Penalty Decomposition</h3>
+
+                <p>
+                    The KL penalty in RLHF connects to maximum entropy RL. Expanding:
+                </p>
+
+                <div class="math-block">
+                    $$D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}}) = \mathbb{E}_{\pi_\theta}\!\left[\log \pi_\theta(y|x) - \log \pi_{\text{ref}}(y|x)\right] = -H(\pi_\theta) - \mathbb{E}_{\pi_\theta}\!\left[\log \pi_{\text{ref}}(y|x)\right]$$
+                </div>
+
+                <p>
+                    The first term is the negative entropy of the policy (encourages exploration, prevents
+                    mode collapse). The second is a cross-entropy anchor to the reference policy. This mirrors
+                    the entropy regularization in MaxEnt RL <a href="#ref-13">[13]</a> and SAC <a href="#ref-14">[14]</a>,
+                    where $H(\pi)$ is added to the reward to prevent premature convergence.
+                </p>
+
+                <p>
+                    In GAN terms, this serves the same role as gradient penalties in WGAN-GP
+                    <a href="#ref-11">[11]</a>: constraining the optimization to prevent the generator
+                    from collapsing onto a narrow set of outputs that exploit the discriminator's blind spots.
+                </p>
+
+                <h2>08 // THE OPTIMAL POLICY AND THE BOLTZMANN CONNECTION</h2>
+
+                <p>
+                    The RLHF objective has a beautiful closed-form solution. Given a fixed reward model
+                    $R_\phi$, the optimal policy $\pi^*$ that maximizes
+                    $\mathbb{E}_{\pi}[R_\phi(x, y)] - \beta \, D_{\text{KL}}(\pi \| \pi_{\text{ref}})$
+                    is <a href="#ref-9">[9]</a>:
+                </p>
+
+                <div class="math-block">
+                    $$\pi^*(y|x) = \frac{1}{Z(x)} \, \pi_{\text{ref}}(y|x) \, \exp\!\left(\frac{R_\phi(x, y)}{\beta}\right)$$
+                </div>
+
+                <p>
+                    where $Z(x) = \sum_y \pi_{\text{ref}}(y|x) \exp(R_\phi(x,y)/\beta)$ is the partition function.
+                </p>
+
+                <p>
+                    This is a <strong>Boltzmann distribution</strong> -- the same form as the energy-based models
+                    in Finn et al.'s triangle <a href="#ref-3">[3]</a>. The reward model plays the role of the
+                    negative energy, the reference policy is the base measure, and $\beta$ is the temperature.
+                </p>
+
+                <p>
+                    Inverting this relationship gives us the <strong>implicit reward</strong>:
+                </p>
+
+                <div class="math-block">
+                    $$R_\phi(x, y) = \beta \log \frac{\pi^*(y|x)}{\pi_{\text{ref}}(y|x)} + \beta \log Z(x)$$
+                </div>
+
+                <p>
+                    This is exactly the insight behind <strong>Direct Preference Optimization</strong> (DPO)
+                    <a href="#ref-9">[9]</a>: since the optimal policy implicitly encodes the reward, we can
+                    bypass the explicit reward model entirely and optimize the policy directly on preference
+                    data. The policy <em>is</em> the reward model -- or in GAN terms, the generator
+                    <em>is</em> the discriminator.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-title">DPO: COLLAPSING THE GAME</div>
+                    <p>
+                        DPO eliminates the two-player game entirely. Instead of training a separate reward model
+                        and then running PPO, DPO reparameterizes the reward in terms of the policy ratio
+                        $\log \frac{\pi_\theta(y|x)}{\pi_{\text{ref}}(y|x)}$ and optimizes the
+                        Bradley-Terry loss directly:
+                        $$\mathcal{L}_{\text{DPO}}(\theta) = -\mathbb{E}_{(x, y_w, y_l)}\!\left[\log \sigma\!\left(\beta \log\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\right]$$
+                        No discriminator. No reward model. No RL. Just supervised learning on preference pairs.
+                        The adversarial game collapses into a single-objective optimization.
+                    </p>
+                </div>
+
+                <h2>09 // FAILURE MODES: SAME GAME, SAME PATHOLOGIES</h2>
+
+                <p>
+                    If GANs and RL are instances of the same game, we should expect similar failure modes.
+                    And indeed we do.
+                </p>
+
+                <h3>Mode Collapse / Reward Hacking</h3>
+
+                <p>
+                    In GANs, <strong>mode collapse</strong> occurs when the generator concentrates on a few
+                    samples that fool the discriminator, ignoring large regions of the data distribution.
+                </p>
+
+                <p>
+                    In RLHF, <strong>reward hacking</strong> (or reward overoptimization
+                    <a href="#ref-10">[10]</a>) occurs when the policy
+                    exploits the reward model's blind spots -- producing outputs that score high on the
+                    proxy reward but are low quality by true human judgment.
+                </p>
+
+                <p>
+                    Gao et al. <a href="#ref-10">[10]</a> showed this follows a characteristic curve: as KL divergence
+                    from the reference policy increases, true quality first improves then degrades:
+                </p>
+
+                <div class="math-block">
+                    $$\text{TrueReward}(\pi_\theta) \propto \alpha \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}}) - \gamma \cdot D_{\text{KL}}(\pi_\theta \| \pi_{\text{ref}})^2$$
+                </div>
+
+                <p>
+                    The linear term is genuine improvement from aligning with human preferences.
+                    The quadratic term is overoptimization -- exploiting the gap between proxy reward
+                    and true quality. This is <strong>Goodhart's Law</strong> in mathematical form: "when
+                    a measure becomes a target, it ceases to be a good measure."
+                </p>
+
+                <h3>Training Instability</h3>
+
+                <p>
+                    GANs are notoriously hard to train -- oscillating gradients, vanishing discriminator
+                    signal, sensitivity to hyperparameters. RL suffers analogous issues: high variance
+                    policy gradients, reward sparsity, sensitivity to learning rates.
+                </p>
+
+                <p>
+                    The stabilization techniques also transfer:
+                </p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 1.5rem 0;">
+                    <tr style="border-bottom: 1px solid var(--text-secondary);">
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">GAN Stabilizer</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">RL Analog</th>
+                    </tr>
+                    <tr><td style="padding:0.5rem;">Gradient penalty (WGAN-GP)</td><td style="padding:0.5rem;">Trust region / clipping (PPO)</td></tr>
+                    <tr><td style="padding:0.5rem;">Spectral normalization</td><td style="padding:0.5rem;">Reward normalization</td></tr>
+                    <tr><td style="padding:0.5rem;">Label smoothing</td><td style="padding:0.5rem;">Reward shaping / clipping</td></tr>
+                    <tr><td style="padding:0.5rem;">Progressive growing</td><td style="padding:0.5rem;">Curriculum learning</td></tr>
+                    <tr><td style="padding:0.5rem;">Two-timescale learning rates</td><td style="padding:0.5rem;">Separate actor/critic learning rates</td></tr>
+                </table>
+
+                <h2>10 // SEQUENTIAL GENERATION: SeqGAN</h2>
+
+                <p>
+                    Standard GANs generate samples in a single forward pass -- image pixels all at once.
+                    But language models generate tokens <em>sequentially</em>. This makes the RLHF-LLM setting
+                    fundamentally multi-step, closer to RL's MDP formulation than to vanilla GANs.
+                </p>
+
+                <p>
+                    <strong>SeqGAN</strong> <a href="#ref-6">[6]</a> bridges this gap by applying the GAN framework to
+                    sequential generation using RL. At each timestep, the generator (policy) selects the next
+                    token $y_t$. Since the discriminator can only evaluate complete sequences, Monte Carlo
+                    rollouts are used to estimate the intermediate reward:
+                </p>
+
+                <div class="math-block">
+                    $$Q_{D_\phi}(s = y_{1:t-1},\, a = y_t) = \begin{cases}
+                    \frac{1}{N}\sum_{n=1}^{N} D_\phi(y_{1:T}^{(n)}) & \text{if } t < T \\
+                    D_\phi(y_{1:T}) & \text{if } t = T
+                    \end{cases}$$
+                </div>
+
+                <p>
+                    where $y_{1:T}^{(n)}$ are complete sequences obtained by rolling out the generator from
+                    position $t$. The generator is then updated with the REINFORCE policy gradient:
+                </p>
+
+                <div class="math-block">
+                    $$\nabla_\theta J(\theta) = \mathbb{E}_{y_{1:t-1} \sim \pi_\theta}\!\left[\sum_{t=1}^{T} \nabla_\theta \log \pi_\theta(y_t | y_{1:t-1}) \cdot Q_{D_\phi}(y_{1:t-1}, y_t)\right]$$
+                </div>
+
+                <p>
+                    This makes the connection explicit: sequential GAN training <em>is</em> RL with the
+                    discriminator as the reward function. SeqGAN was, in a sense, a precursor to RLHF
+                    for language models -- both use policy gradients to optimize a sequence generator
+                    against a learned evaluator.
+                </p>
+
+                <h2>11 // THE UNIFIED VIEW</h2>
+
+                <p>
+                    Let's step back and see the full picture. We can describe a single abstract framework
+                    that encompasses GANs, RL, inverse RL, and RLHF:
+                </p>
+
+                <div class="math-block">
+                    $$\min_G \max_D \; \underbrace{\mathbb{E}_{p_{\text{ref}}}[\ell_D(D(\mathbf{x}))]}_{\text{evaluate reference}} + \underbrace{\mathbb{E}_{p_G}[\ell_G(D(\mathbf{x}))]}_{\text{evaluate generated}} - \underbrace{\lambda \, \Omega(G)}_{\text{regularize generator}}$$
+                </div>
+
+                <p>
+                    where $\ell_D, \ell_G$ are evaluation losses and $\Omega(G)$ is a generator regularizer.
+                    Each framework instantiates this differently:
+                </p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 1.5rem 0;">
+                    <tr style="border-bottom: 1px solid var(--text-secondary);">
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">Framework</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">$p_{\text{ref}}$</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">$D$</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">$\Omega(G)$</th>
+                        <th style="text-align:left; padding:0.5rem; color:var(--neon-cyan);">Game Type</th>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;">GAN</td>
+                        <td style="padding:0.5rem;">$p_{\text{data}}$</td>
+                        <td style="padding:0.5rem;">Co-trained</td>
+                        <td style="padding:0.5rem;">None</td>
+                        <td style="padding:0.5rem;">Nash (simultaneous)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;">GAIL</td>
+                        <td style="padding:0.5rem;">$\pi_E$</td>
+                        <td style="padding:0.5rem;">Co-trained</td>
+                        <td style="padding:0.5rem;">$H(\pi)$</td>
+                        <td style="padding:0.5rem;">Nash (alternating)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;">RL</td>
+                        <td style="padding:0.5rem;">N/A</td>
+                        <td style="padding:0.5rem;">Fixed ($r$)</td>
+                        <td style="padding:0.5rem;">$H(\pi)$</td>
+                        <td style="padding:0.5rem;">Single-player</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;">RLHF</td>
+                        <td style="padding:0.5rem;">Human prefs</td>
+                        <td style="padding:0.5rem;">Pre-trained, frozen</td>
+                        <td style="padding:0.5rem;">$D_{\text{KL}}(\pi \| \pi_{\text{ref}})$</td>
+                        <td style="padding:0.5rem;">Stackelberg</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;">DPO</td>
+                        <td style="padding:0.5rem;">Human prefs</td>
+                        <td style="padding:0.5rem;">Implicit in $\pi$</td>
+                        <td style="padding:0.5rem;">$D_{\text{KL}}(\pi \| \pi_{\text{ref}})$</td>
+                        <td style="padding:0.5rem;">Collapsed (single-player)</td>
+                    </tr>
+                </table>
+
+                <p>
+                    The spectrum runs from a full two-player simultaneous game (GAN) through a
+                    leader-follower game (RLHF) to a collapsed single-player optimization (DPO).
+                    As the evaluative model becomes more tightly coupled with the generative model,
+                    the adversarial dynamics simplify -- but at the cost of less adaptive evaluation.
+                </p>
+
+                <h2>12 // CONCLUSION</h2>
+
+                <p>
+                    The connection between GANs and RL is not a loose analogy -- it is a formal mathematical
+                    equivalence rooted in game theory, f-divergence minimization, and convex duality.
+                    The generator is the actor; the discriminator is the critic. What differs is the source
+                    and dynamics of the evaluative signal.
+                </p>
+
+                <p>
+                    GANs build their reward on the fly through a co-trained discriminator -- the evaluator
+                    evolves with the generator in a simultaneous game. RL (and RLHF) uses a fixed or
+                    pre-trained reward signal -- the evaluator is external and static. This seemingly small
+                    difference has profound consequences for training dynamics, stability, and failure modes.
+                </p>
+
+                <p>
+                    The modern RLHF pipeline for LLMs sits at the intersection: the reward model is a
+                    learned evaluator (like a discriminator), but it is trained separately and frozen
+                    (like an environment reward). DPO collapses the game entirely, revealing that the
+                    adversarial structure was always implicit in the preference data.
+                </p>
+
+                <p>
+                    Understanding this unified view is more than academic. It tells us <em>why</em> RLHF
+                    suffers from reward hacking (same root cause as mode collapse), <em>why</em> KL penalties
+                    help (same role as gradient penalties and entropy regularization), and <em>where</em> to
+                    look for better algorithms -- in the rich toolbox that both communities have built for
+                    stabilizing adversarial optimization.
+                </p>
+
+                <blockquote>
+                    <p>"Every generative model is an agent playing against an evaluator. The question is whether the evaluator plays back."</p>
+                </blockquote>
+
+                <div class="post-divider"></div>
+
+                <div class="references">
+                    <h2>REFERENCES</h2>
+                    <ol class="ref-list">
+                        <li id="ref-1">
+                            <span class="ref-authors">Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., Courville, A. &amp; Bengio, Y.</span>
+                            <span class="ref-title">Generative Adversarial Nets.</span>
+                            <span class="ref-venue">NeurIPS 2014.</span>
+                            <a href="https://arxiv.org/abs/1406.2661" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-2">
+                            <span class="ref-authors">Pfau, D. &amp; Vinyals, O.</span>
+                            <span class="ref-title">Connecting Generative Adversarial Networks and Actor-Critic Methods.</span>
+                            <span class="ref-venue">arXiv:1611.02163, 2016.</span>
+                            <a href="https://arxiv.org/abs/1611.02163" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-3">
+                            <span class="ref-authors">Finn, C., Christiano, P., Abbeel, P. &amp; Levine, S.</span>
+                            <span class="ref-title">A Connection Between Generative Adversarial Networks, Inverse Reinforcement Learning, and Energy-Based Models.</span>
+                            <span class="ref-venue">NeurIPS 2016 Workshop.</span>
+                            <a href="https://arxiv.org/abs/1611.03852" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-4">
+                            <span class="ref-authors">Ho, J. &amp; Ermon, S.</span>
+                            <span class="ref-title">Generative Adversarial Imitation Learning.</span>
+                            <span class="ref-venue">NeurIPS 2016.</span>
+                            <a href="https://arxiv.org/abs/1606.03476" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-5">
+                            <span class="ref-authors">Nowozin, S., Cseke, B. &amp; Tomioka, R.</span>
+                            <span class="ref-title">f-GAN: Training Generative Neural Samplers using Variational Divergence Minimization.</span>
+                            <span class="ref-venue">NeurIPS 2016.</span>
+                            <a href="https://arxiv.org/abs/1606.00709" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-6">
+                            <span class="ref-authors">Yu, L., Zhang, W., Wang, J. &amp; Yu, Y.</span>
+                            <span class="ref-title">SeqGAN: Sequence Generative Adversarial Nets with Policy Gradient.</span>
+                            <span class="ref-venue">AAAI 2017.</span>
+                            <a href="https://arxiv.org/abs/1609.05473" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-7">
+                            <span class="ref-authors">Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., Zhang, C., Agarwal, S., Slama, K., Ray, A., et al.</span>
+                            <span class="ref-title">Training Language Models to Follow Instructions with Human Feedback.</span>
+                            <span class="ref-venue">NeurIPS 2022.</span>
+                            <a href="https://arxiv.org/abs/2203.02155" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-8">
+                            <span class="ref-authors">Schulman, J., Wolski, F., Dhariwal, P., Klimov, O. &amp; Radford, A.</span>
+                            <span class="ref-title">Proximal Policy Optimization Algorithms.</span>
+                            <span class="ref-venue">arXiv:1707.06347, 2017.</span>
+                            <a href="https://arxiv.org/abs/1707.06347" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-9">
+                            <span class="ref-authors">Rafailov, R., Sharma, A., Mitchell, E., Ermon, S., Manning, C. D. &amp; Finn, C.</span>
+                            <span class="ref-title">Direct Preference Optimization: Your Language Model is Secretly a Reward Model.</span>
+                            <span class="ref-venue">NeurIPS 2023.</span>
+                            <a href="https://arxiv.org/abs/2305.18290" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-10">
+                            <span class="ref-authors">Gao, L., Schulman, J. &amp; Hilton, J.</span>
+                            <span class="ref-title">Scaling Laws for Reward Model Overoptimization.</span>
+                            <span class="ref-venue">ICML 2023.</span>
+                            <a href="https://arxiv.org/abs/2210.10760" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-11">
+                            <span class="ref-authors">Gulrajani, I., Ahmed, F., Arjovsky, M., Dumoulin, V. &amp; Courville, A.</span>
+                            <span class="ref-title">Improved Training of Wasserstein GANs.</span>
+                            <span class="ref-venue">NeurIPS 2017.</span>
+                            <a href="https://arxiv.org/abs/1704.00028" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                        <li id="ref-12">
+                            <span class="ref-authors">Williams, R. J.</span>
+                            <span class="ref-title">Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning.</span>
+                            <span class="ref-venue">Machine Learning, 8(3-4), 229-256, 1992.</span>
+                        </li>
+                        <li id="ref-13">
+                            <span class="ref-authors">Ziebart, B. D., Maas, A., Bagnell, J. A. &amp; Dey, A. K.</span>
+                            <span class="ref-title">Maximum Entropy Inverse Reinforcement Learning.</span>
+                            <span class="ref-venue">AAAI 2008.</span>
+                        </li>
+                        <li id="ref-14">
+                            <span class="ref-authors">Haarnoja, T., Zhou, A., Abbeel, P. &amp; Levine, S.</span>
+                            <span class="ref-title">Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.</span>
+                            <span class="ref-venue">ICML 2018.</span>
+                            <a href="https://arxiv.org/abs/1801.01290" target="_blank" class="ref-link"><i class="fas fa-external-link-alt"></i></a>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </article>
+
+        <div class="post-nav">
+            <a href="../index.html"><i class="fas fa-arrow-left"></i> BACK TO BLOG</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p class="footer-text">// built with caffeine and mass GPU hours</p>
+            <p class="footer-copy">&copy; 2026 Hao Xin. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../shared.js"></script>
+    <script>
+        createParticles(30);
+    </script>
+</body>
+</html>
