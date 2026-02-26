@@ -1414,6 +1414,160 @@ footer {
     opacity: 0.3;
 }
 
+/* ========== GRADIENT ORBS ========== */
+.gradient-orbs {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.08;
+    will-change: transform;
+}
+
+.orb-cyan {
+    width: 500px;
+    height: 500px;
+    background: var(--neon-cyan);
+    top: 10%;
+    left: -5%;
+    animation: orb-drift-1 25s ease-in-out infinite;
+}
+
+.orb-pink {
+    width: 450px;
+    height: 450px;
+    background: var(--neon-pink);
+    top: 40%;
+    right: -8%;
+    animation: orb-drift-2 30s ease-in-out infinite;
+}
+
+.orb-purple {
+    width: 400px;
+    height: 400px;
+    background: var(--neon-purple);
+    bottom: 5%;
+    left: 30%;
+    animation: orb-drift-3 22s ease-in-out infinite;
+}
+
+@keyframes orb-drift-1 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(80px, 60px); }
+    50% { transform: translate(40px, -40px); }
+    75% { transform: translate(-30px, 30px); }
+}
+
+@keyframes orb-drift-2 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-70px, -50px); }
+    50% { transform: translate(-30px, 40px); }
+    75% { transform: translate(50px, -20px); }
+}
+
+@keyframes orb-drift-3 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(60px, -40px); }
+    50% { transform: translate(-50px, -20px); }
+    75% { transform: translate(20px, 50px); }
+}
+
+[data-theme="light"] .orb {
+    opacity: 0.06;
+}
+
+/* ========== CITY SKYLINE ========== */
+.city-skyline {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.city-skyline::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    background: var(--text-heading);
+    opacity: 0.04;
+    clip-path: polygon(
+        0% 100%,
+        0% 70%,
+        2% 70%, 2% 55%, 5% 55%, 5% 65%, 7% 65%, 7% 45%, 9% 45%, 9% 65%,
+        11% 65%, 11% 50%, 13% 50%, 13% 35%, 14.5% 33%, 16% 35%, 16% 50%,
+        18% 50%, 18% 60%, 20% 60%, 20% 40%, 22% 40%, 22% 55%, 24% 55%,
+        24% 30%, 26% 30%, 26% 25%, 27% 20%, 28% 25%, 28% 30%, 30% 30%,
+        30% 50%, 32% 50%, 32% 45%, 35% 45%, 35% 35%, 37% 35%, 37% 50%,
+        39% 50%, 39% 60%, 41% 60%, 41% 40%, 43% 40%, 43% 20%, 44.5% 15%,
+        46% 20%, 46% 40%, 48% 40%, 48% 55%, 50% 55%, 50% 45%, 52% 45%,
+        52% 25%, 54% 25%, 54% 45%, 56% 45%, 56% 55%, 58% 55%, 58% 35%,
+        60% 35%, 60% 50%, 62% 50%, 62% 40%, 64% 40%, 64% 55%, 66% 55%,
+        66% 60%, 68% 60%, 68% 38%, 70% 38%, 70% 30%, 71.5% 26%, 73% 30%,
+        73% 38%, 75% 38%, 75% 50%, 77% 50%, 77% 45%, 79% 45%, 79% 55%,
+        81% 55%, 81% 65%, 83% 65%, 83% 42%, 85% 42%, 85% 55%, 87% 55%,
+        87% 48%, 89% 48%, 89% 60%, 91% 60%, 91% 50%, 93% 50%, 93% 65%,
+        95% 65%, 95% 55%, 97% 55%, 97% 70%, 100% 70%,
+        100% 100%
+    );
+}
+
+.skyline-lights {
+    position: absolute;
+    inset: 0;
+}
+
+.building-light {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 4px var(--neon-cyan), 0 0 8px var(--neon-cyan);
+    opacity: 0.6;
+    animation: building-light-blink 4s ease-in-out infinite;
+}
+
+.building-light.light-pink {
+    background: var(--neon-pink);
+    box-shadow: 0 0 4px var(--neon-pink), 0 0 8px var(--neon-pink);
+    animation-delay: 1.2s;
+}
+
+.building-light.light-purple {
+    background: var(--neon-purple);
+    box-shadow: 0 0 4px var(--neon-purple), 0 0 8px var(--neon-purple);
+    animation-delay: 2.5s;
+}
+
+@keyframes building-light-blink {
+    0%, 100% { opacity: 0.6; }
+    40% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+    60% { opacity: 0.4; }
+}
+
+[data-theme="light"] .city-skyline::before {
+    opacity: 0.03;
+}
+
+[data-theme="light"] .building-light {
+    opacity: 0.4;
+    box-shadow: none;
+}
+
 /* ========== CLICK RIPPLE ========== */
 .ripple {
     position: absolute;
