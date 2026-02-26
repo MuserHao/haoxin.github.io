@@ -16,11 +16,6 @@
         setTheme(current === 'dark' ? 'light' : 'dark');
     });
 
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-            setTheme(e.matches ? 'light' : 'dark');
-        }
-    });
 })();
 
 // ========== PARTICLES ==========
