@@ -294,21 +294,22 @@ nav {
 }
 
 .logo-mark {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     color: var(--neon-cyan);
     filter: drop-shadow(0 0 6px var(--cyan-text-glow)) drop-shadow(0 0 20px var(--cyan-glow-md))
-            drop-shadow(0 0 4px var(--purple-glow-md));
+            drop-shadow(0 0 6px var(--purple-glow-md));
     transition: all 0.3s ease;
 }
 
 .logo-x {
-    filter: drop-shadow(0 0 5px var(--neon-purple)) drop-shadow(0 0 10px var(--purple-text-glow));
+    filter: drop-shadow(0 0 6px var(--neon-purple)) drop-shadow(0 0 12px var(--purple-text-glow))
+            drop-shadow(0 0 4px var(--neon-yellow));
 }
 
 .logo:hover .logo-mark {
     filter: drop-shadow(0 0 10px var(--neon-cyan)) drop-shadow(0 0 20px var(--cyan-glow-lg))
-            drop-shadow(0 0 12px var(--neon-purple)) drop-shadow(0 0 8px var(--neon-yellow));
+            drop-shadow(0 0 14px var(--neon-purple)) drop-shadow(0 0 10px var(--neon-yellow));
     transform: scale(1.08);
 }
 
