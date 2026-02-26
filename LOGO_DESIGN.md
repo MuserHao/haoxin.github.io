@@ -6,9 +6,11 @@ The HX monogram is a personal brand mark for Hao Xin. It combines two letterform
 
 ```
     viewBox: 0 0 40 40
-    center:  ~(20, 18)
+    circle:  center (20,20), radius 16
     render:  64 x 64 px
 ```
+
+All elements are contained within the broken circle boundary. The H and X tips stay inside the radius-16 ring, reinforcing the circle as the unifying frame.
 
 ---
 
@@ -16,7 +18,7 @@ The HX monogram is a personal brand mark for Hao Xin. It combines two letterform
 
 Three cyan arc segments form an incomplete ring around the monogram. The gaps between arcs reference the Japanese art of **kintsugi** -- repairing broken pottery with gold -- celebrating imperfection and the beauty of what is unfinished. The circle provides visual containment without closure, echoing the H's theme of an open-ended journey.
 
-**Implementation:** Three `<path>` arcs (radius 16, stroke-width 1.8) with deliberate gaps between them. Colored via `currentColor` inheriting `var(--neon-cyan)`.
+**Implementation:** Three `<path>` arcs (radius 16 from center 20,20, stroke-width 1.8) with deliberate gaps between them. Colored via `currentColor` inheriting `var(--neon-cyan)`.
 
 ---
 
@@ -33,16 +35,25 @@ This represents:
 
 The horizontal crossbar connects the two legs, grounding the structure and forming the recognizable H letterform.
 
+### Boundary Constraint
+
+All H geometry stays within the broken circle (radius 16, center 20,20):
+- Base points (11,32) and (29,32) are ~13.4 units from center -- inside the circle
+- Tips (18.5,8) and (21.5,8) are ~12.2 units from center -- inside the circle
+- Crossbar endpoints (14,23) and (26,23) are ~6.7 units from center -- well inside
+
+This ensures the H never pierces the outer ring, keeping all elements visually contained.
+
 ### Geometry
 
 ```
-Left leg:   (8, 33) --> (18.5, 7)
-Right leg:  (21.5, 7) --> (32, 33)
+Left leg:   (11, 32) --> (18.5, 8)
+Right leg:  (21.5, 8) --> (29, 32)
 Gap at top: 3 units between tips (18.5 to 21.5)
-Crossbar:   (12, 23) --> (28, 23)
+Crossbar:   (14, 23) --> (26, 23)
 ```
 
-The vanishing point would be at (20, ~3) if the lines were extended, but they stop short. The gap is the symbol: the goal is approached but never fully reached, because the act of striving matters more than arrival.
+The vanishing point would be at (20, ~1) if the lines were extended, but they stop short at y=8. The gap is the symbol: the goal is approached but never fully reached, because the act of striving matters more than arrival.
 
 ### Rendering
 
@@ -52,69 +63,78 @@ The vanishing point would be at (20, ~3) if the lines were extended, but they st
 
 ---
 
-## The X -- Golden Crystal
+## The X -- Metallic Hex-Gem Crystal
 
 ### Concept
 
-The X is built from **four independent hex-prism crystal shards** -- sharp, blade-like arms radiating from a central diamond hub. Each arm is a faceted gem rendered with multi-stop gold gradients that simulate sunlight reflecting off cut crystal faces.
+The X is built from **four independent hex-prism crystal shards** -- sharp, blade-like arms radiating from a central kite-shaped hub. Each arm is a faceted gem rendered with multi-stop metallic gold gradients that simulate light reflecting off polished cut metal and gemstone faces.
 
 This represents:
 - **Sharp brilliance** -- the razor-thin blades convey precision, intellect, and cutting clarity
-- **Golden radiance** -- the warm gold palette evokes sunlight, excellence, and something inherently precious
+- **Metallic radiance** -- the deep metallic gold palette evokes forged metal, refined excellence, and something inherently precious
 - **The X factor** -- a talent and quality that makes extraordinary things happen; the indefinable edge that turns potential into impact
-- **On target** -- the four arms converging on the central hub suggest focus, accuracy, and hitting the mark
+- **On target** -- the center hub is a kite shape pointing upward toward the H's vanishing point, symbolizing focus, forward aim, and hitting the mark
 
 ### Architecture: Four Components
 
 Each arm is an independent crystal shard with **three facets** (hex-prism cutting):
 
-1. **Top face (a)** -- the brightest facet, catching direct light. 7-stop gradient from warm gold (#F0D050) through champagne (#F8E888), cream (#FFF6CC), and near-white (#FFFFFF) back to gold. This creates the sunlit specular highlight.
+1. **Top face (a)** -- the brightest facet, catching direct light. 7-stop gradient from metallic gold (#C8A840) through warm highlights (#E8D888, #F0E8B0) to a soft specular peak (#F8F0C8) and back. No pure white -- the peak remains within the gold family for a polished-metal feel rather than a glassy one.
 
-2. **Left bevel (b)** -- medium-tone facet angled away from primary light. 4-stop gradient from bright gold to medium gold (#C49A30).
+2. **Left bevel (b)** -- medium-tone facet angled away from primary light. 4-stop gradient from metallic gold (#C8A840) to deep bronze (#806020).
 
-3. **Right bevel (c)** -- the shadow facet catching less light. 4-stop gradient from medium gold (#D4AD42) to deep gold (#9A7518).
+3. **Right bevel (c)** -- the shadow facet catching the least light. 4-stop gradient from antique gold (#A08830) to dark patina (#605010).
 
 The ridge line between bevels runs from the arm's tip to the midpoint of its hub edge, creating the illusion of a three-dimensional prism face.
 
 ### The Four Arms
 
 ```
-Arm 1 (upper-left):   tip at (3, 3)   --> hub edge (17,18)-(20,15)
-Arm 2 (upper-right):  tip at (37, 3)  --> hub edge (20,15)-(23,18)
-Arm 3 (lower-right):  tip at (37, 33) --> hub edge (23,18)-(20,21)
-Arm 4 (lower-left):   tip at (3, 33)  --> hub edge (20,21)-(17,18)
+Arm 1 (upper-left):   tip at (4, 4)   --> hub edge (17,18)-(20,14)
+Arm 2 (upper-right):  tip at (36, 4)  --> hub edge (20,14)-(23,18)
+Arm 3 (lower-right):  tip at (36, 32) --> hub edge (23,18)-(20,20)
+Arm 4 (lower-left):   tip at (4, 32)  --> hub edge (20,20)-(17,18)
 ```
+
+Tips are pulled inward to (4,4)/(36,4)/(36,32)/(4,32) -- inside the circle boundary -- so the X blades don't pierce the outer ring.
 
 Each arm's gradient directions are **unique** -- rotated to match the arm's orientation so light appears to fall consistently from a single source. No two arms share the same gradient definition.
 
 ### The Center Hub
 
-A diamond shape at the intersection where all four arms meet:
+A **kite shape** (not a symmetric diamond) at the intersection where all four arms meet. The top vertex is pulled higher than the bottom, creating a directional pointer:
 
 ```
-Vertices: (20,15) top -- (23,18) right -- (20,21) bottom -- (17,18) left
+Vertices: (20,14) top -- (23,18) right -- (20,20) bottom -- (17,18) left
+Top-to-center: 4 units above midline
+Bottom-to-center: 2 units below midline
 ```
 
-The hub uses a **radial gradient** (`dHub`) with warm golden tones (`#FFF6CC` center to `#E0C040` edge) that blends smoothly into the surrounding arm facets. The hub is deliberately **not white** -- it matches the golden palette to avoid harsh contrast with the crystal arms, creating a unified jewel appearance.
+The hub points **upward toward the H's vanishing point**, reinforcing the "on target, moving forward" symbolism. The kite's elongated top vertex aligns with the direction of convergence.
+
+The hub uses a **vertical linear gradient** (`dHub`) flowing from dark bronze (#907828) at the bottom to warm gold (#E8D888) at the top. This bottom-to-top brightening:
+- Creates a natural sense of upward motion (light = direction)
+- Blends seamlessly with the surrounding arm facets (no bright hotspot)
+- Reinforces the forward/upward orientation of the entire mark
 
 ### Color Palette
 
-The golden palette is designed to evoke sunlight, not metallic coldness:
+The metallic palette is designed to evoke polished forged metal and cut gemstone:
 
 | Role | Color | Hex |
 |------|-------|-----|
-| Bright gold (base) | Warm sunflower | `#F0D050` |
-| Light gold | Champagne | `#F8E888` |
-| Pale gold | Cream | `#FFF6CC` |
-| Near-white | Ivory | `#FFFEF5` |
-| Specular peak | Pure white | `#FFFFFF` |
-| Medium gold | Harvest | `#E0C040` |
-| Deep gold | Antique | `#D4AD42` |
-| Shadow gold | Amber | `#C49A30` |
-| Dark gold | Bronze | `#B08820` |
-| Deepest shadow | Old gold | `#9A7518` |
+| Bright metallic gold | Polished gold | `#C8A840` |
+| Warm gold | Brushed gold | `#D8C060` |
+| Light highlight | Champagne metal | `#E8D888` |
+| Soft highlight | Warm sheen | `#F0E8B0` |
+| Specular peak | Metallic gleam | `#F8F0C8` |
+| Medium gold | Antique gold | `#B09030` |
+| Deep gold | Old bronze | `#987828` |
+| Dark bronze | Weathered metal | `#806020` |
+| Shadow | Dark patina | `#706018` |
+| Deepest shadow | Deep patina | `#605010` |
 
-Edge strokes use `#B08820` at 0.2-0.3px to define facet boundaries without creating harsh lines.
+Edge strokes use `#806020` at 0.2-0.3px to define facet boundaries -- darker than before, matching the metallic tone and avoiding visible seam lines.
 
 ---
 
@@ -134,13 +154,13 @@ Edge strokes use `#B08820` at 0.2-0.3px to define facet boundaries without creat
 | `d4a` | Arm 4 top face | linear | 7 | top-right to bottom-left |
 | `d4b` | Arm 4 left bevel | linear | 4 | bottom-right to top-left |
 | `d4c` | Arm 4 right bevel | linear | 4 | top-left to bottom-right |
-| `dHub` | Center diamond | radial | 5 | center outward |
+| `dHub` | Center kite | linear | 5 | bottom to top (vertical) |
 
 ---
 
 ## CSS Integration
 
-The logo is rendered at 64x64px with a cyan neon glow applied to the H and broken circle via CSS `drop-shadow`. The golden X facets are colored by their fill gradients and are **not** affected by the cyan glow -- the gold stands on its own.
+The logo is rendered at 64x64px with a cyan neon glow applied to the H and broken circle via CSS `drop-shadow`. The metallic X facets are colored by their fill gradients and are **not** affected by the cyan glow -- the metal stands on its own.
 
 ```css
 .logo-mark {
@@ -185,7 +205,8 @@ All three contain identical SVG markup (only the `<a href>` differs).
 | Broken circle | 3 cyan arcs with gaps | Kintsugi -- beauty in imperfection |
 | H legs | Two converging lines that never meet | Perpetual forward motion, never giving up |
 | H crossbar | Horizontal connecting bar | Structural identity, the letter H |
-| X arms | 4 sharp golden crystal blades | Brilliance, precision, the X factor |
-| X hub | Central golden diamond | Focus, convergence, being on target |
+| X arms | 4 sharp metallic crystal blades | Brilliance, precision, the X factor |
+| X hub | Kite pointing toward vanishing point | On target, forward focus, moving ahead |
 | Cyan color | H + circle glow | Technical, futuristic identity |
-| Gold color | X facets | Excellence, radiance, precious talent |
+| Metallic gold | X facets | Excellence, forged strength, precious talent |
+| Containment | All elements within circle | Unity, cohesion, everything held together |
