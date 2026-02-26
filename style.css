@@ -294,8 +294,8 @@ nav {
 }
 
 .logo-mark {
-    width: 38px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
     color: var(--neon-cyan);
     filter: drop-shadow(0 0 6px var(--cyan-text-glow)) drop-shadow(0 0 20px var(--cyan-glow-md))
             drop-shadow(0 0 4px var(--purple-glow-md));
